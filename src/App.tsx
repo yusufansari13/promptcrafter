@@ -29,6 +29,8 @@ export default function App() {
   const [addCreativeElements, setAddCreativeElements] = useState(false);
   const [strictFontMatching, setStrictFontMatching] = useState(false);
   const [uniqueTextStyles, setUniqueTextStyles] = useState(false);
+  const [customAction, setCustomAction] = useState('');
+  const [customMood, setCustomMood] = useState('');
   const [styleAdherence, setStyleAdherence] = useState<StyleAdherenceType>('Strict adherence');
   const [stylePresets, setStylePresets] = useState<StylePresetType[]>([]);
   const [characterLikenessWeight, setCharacterLikenessWeight] = useState<number>(80);
@@ -333,6 +335,8 @@ export default function App() {
       const generatedPrompt = await generateFn(payloads, {
         modelName: model,
         isCompletelyNew: generationMode === 'new_artwork',
+        customAction,
+        customMood,
         addCreativeElements,
         strictFontMatching,
         styleAdherence,
@@ -950,246 +954,277 @@ export default function App() {
                   </select>
                 </div>
 
+                {/* RECREATION SETTINGS */}
                 {generationMode === 'recreation' && (
-                  <div className="space-y-3 pt-4 border-t border-white/10">
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={useImageAsReference}
-                        onChange={(e) => setUseImageAsReference(e.target.checked)}
-                        className="form-checkbox h-4 w-4 rounded border-white/20 bg-black/50 text-[#FF6321] focus:ring-[#FF6321] focus:ring-offset-0"
+                  <>
+                    <div className="space-y-3 pt-4 border-t border-white/10">
+                      <label className="flex items-center space-x-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={useImageAsReference}
+                          onChange={(e) => setUseImageAsReference(e.target.checked)}
+                          className="form-checkbox h-4 w-4 rounded border-white/20 bg-black/50 text-[#FF6321] focus:ring-[#FF6321] focus:ring-offset-0"
+                        />
+                        <span className="text-sm text-white/80">Use Image as Reference (Image-to-Image Mode)</span>
+                      </label>
+                      <p className="text-[10px] text-white/50 pl-7">Instructs the AI to only use the source image for reference/inspiration and explicitly forbids editing, repainting, or tracing it.</p>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-white/10">
+                      <label className="block text-xs font-mono text-white/50 uppercase tracking-wider mb-2">Mandatory Subject Traits</label>
+                      <textarea
+                        value={mandatorySubjectTraits}
+                        onChange={(e) => setMandatorySubjectTraits(e.target.value)}
+                        placeholder="e.g., 'finger on lips shushing, deep cleavage, intense gaze'"
+                        className="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:border-[#FF6321]/50 focus:outline-none resize-none h-16"
                       />
-                      <span className="text-sm text-white/80">Use Image as Reference (Image-to-Image Mode)</span>
-                    </label>
-                    <p className="text-[10px] text-white/50 pl-7">Instructs the AI to only use the source image for reference/inspiration and explicitly forbids editing, repainting, or tracing it.</p>
-                  </div>
+                      <p className="text-[10px] text-white/50 mt-1">Forces the AI to prioritize these specific physical/expressive details so they are never lost.</p>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-white/10">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <label className="block text-xs font-mono text-white/50 uppercase tracking-wider">Style Adherence</label>
+                        <div className="group relative">
+                          <Info className="w-3.5 h-3.5 text-white/40 cursor-help" />
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-black/90 border border-white/10 rounded-xl text-xs text-white/80 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                            Controls how strictly the AI should follow the artistic style of the source image vs Hallucinating its own interpretations.
+                          </div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        {(['Strict adherence', 'Inspired by', 'Playful interpretation'] as StyleAdherenceType[]).map((s) => (
+                          <button
+                            key={s}
+                            onClick={() => setStyleAdherence(s)}
+                            className={`py-2 px-3 rounded-lg text-xs font-medium transition-all duration-200 border ${
+                              styleAdherence === s 
+                                ? 'bg-[#FF6321]/10 border-[#FF6321] text-[#FF6321]' 
+                                : 'bg-black/50 border-white/10 text-white/60 hover:bg-white/5 hover:text-white'
+                            }`}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-white/10">
+                      <label className="block text-xs font-mono text-white/50 uppercase tracking-wider mb-3">Style Override Presets</label>
+                      <div className="flex flex-wrap gap-2">
+                        {(['None', 'Photorealistic', 'Anime / Manga', 'Cyberpunk', 'Watercolor', '3D Render', 'Pixel Art', 'Abstract Textured (Raised 1-2mm)', 'Impasto Oil Painting', 'Classic Oil Painting', 'Real Hand-Painted Item', 'Neon Cyber-Noir', 'Vintage Pop-Art', 'Surrealism', 'Papercraft / Origami'] as StylePresetType[]).map((p) => (
+                          <button
+                            key={p}
+                            onClick={() => {
+                              if (p === 'None') {
+                                setStylePresets([]);
+                                setStyleAdherence('Strict adherence');
+                              } else {
+                                if (stylePresets.includes(p)) {
+                                  setStylePresets(stylePresets.filter(preset => preset !== p));
+                                } else {
+                                  setStylePresets([...stylePresets.filter(preset => preset !== 'None'), p]);
+                                }
+                                setStyleAdherence('Playful interpretation');
+                              }
+                            }}
+                            className={`py-1.5 px-3 rounded-lg text-xs font-medium transition-all duration-200 border ${
+                              (p === 'None' && stylePresets.length === 0) || stylePresets.includes(p)
+                                ? 'bg-[#FF6321]/10 border-[#FF6321] text-[#FF6321]' 
+                                : 'bg-black/50 border-white/10 text-white/60 hover:bg-white/5 hover:text-white'
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        ))}
+                      </div>
+
+                      {stylePresets.length > 0 && (
+                        <div className="space-y-2 pt-3">
+                          <div className="flex justify-between text-[10px] font-mono text-white/40 uppercase">
+                            <span>Preset Override Strength</span>
+                            <span className="text-[#FF6321]">{stylePresetStrength}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="1" 
+                            max="100" 
+                            value={stylePresetStrength} 
+                            onChange={(e) => setStylePresetStrength(parseInt(e.target.value))}
+                            className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#FF6321]"
+                          />
+                          <p className="text-[10px] text-white/40 italic">
+                            Controls how strongly the selected presets overwrite the original image's style. 100% forces the preset style completely.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-white/10">
+                      <label className="block text-xs font-mono text-white/50 uppercase tracking-wider mb-3">Subject Manipulation</label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {[
+                          { label: 'Match Original', desc: 'Accurately describes the original subjects and characters exactly as they appear.' },
+                          { label: 'Keep Original Subject Identity', desc: 'Retains the exact identity of the main character (e.g., Marilyn Monroe) but places them in new poses or situations.' },
+                          { label: 'Reinterpret Subject Concept', desc: 'Keeps the conceptual theme but modifies proportions, expressions, and styling to avoid an exact likeness.' },
+                          { label: 'New Subject/Character', desc: 'Invents completely new characters and subjects that match the original style but represent a different concept.' }
+                        ].map(({ label, desc }) => (
+                          <div key={label} className="group/tooltip relative flex">
+                            <button
+                              onClick={() => setSubjectManipulation(label as SubjectManipulationType)}
+                              className={`w-full py-2 px-3 rounded-lg text-xs font-medium transition-all duration-200 border text-left flex justify-between items-center ${
+                                subjectManipulation === label 
+                                  ? 'bg-[#FF6321]/10 border-[#FF6321] text-[#FF6321]' 
+                                  : 'bg-black/50 border-white/10 text-white/60 hover:bg-white/5 hover:text-white'
+                              }`}
+                            >
+                              <span className="truncate pr-2">{label}</span>
+                              <Info className="w-3.5 h-3.5 opacity-40 shrink-0" />
+                            </button>
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-black/90 border border-white/10 rounded-xl text-xs text-white/80 opacity-0 group-hover/tooltip:opacity-100 pointer-events-none transition-opacity z-50 shadow-xl whitespace-normal break-words">
+                              {desc}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-white/10">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <label className="block text-xs font-mono text-white/50 uppercase tracking-wider">Style Preservation</label>
+                        <div className="group relative">
+                          <Info className="w-3.5 h-3.5 text-white/40 cursor-help" />
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-black/90 border border-white/10 rounded-xl text-xs text-white/80 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                            Adjust how strictly exact features from the source image are maintained in the output.
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <div className="flex justify-between items-center text-xs text-white/70 mb-2">
+                            <div className="flex items-center space-x-1">
+                              <span>Character Likeness</span>
+                              <div className="group relative">
+                                <Info className="w-3 h-3 text-white/30 cursor-help" />
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black/90 border border-white/10 rounded-lg text-[10px] text-white/80 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">How strictly the facial features and anatomy of the subject should be preserved.</div>
+                              </div>
+                            </div>
+                            <span className="text-[#FF6321] font-mono">{characterLikenessWeight}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="100" 
+                            step="10" 
+                            value={characterLikenessWeight} 
+                            onChange={(e) => setCharacterLikenessWeight(Number(e.target.value))} 
+                            className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                          />
+                        </div>
+
+                        <div>
+                          <div className="flex justify-between items-center text-xs text-white/70 mb-2">
+                            <div className="flex items-center space-x-1">
+                              <span>Color Palette Fidelity</span>
+                              <div className="group relative">
+                                <Info className="w-3 h-3 text-white/30 cursor-help" />
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black/90 border border-white/10 rounded-lg text-[10px] text-white/80 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">How strictly the exact original colors should be maintained without shifting.</div>
+                              </div>
+                            </div>
+                            <span className="text-[#FF6321] font-mono">{colorPaletteWeight}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="100" 
+                            step="10" 
+                            value={colorPaletteWeight} 
+                            onChange={(e) => setColorPaletteWeight(Number(e.target.value))} 
+                            className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                          />
+                        </div>
+
+                        <div>
+                          <div className="flex justify-between items-center text-xs text-white/70 mb-2">
+                            <div className="flex items-center space-x-1">
+                              <span>Artistic Medium</span>
+                              <div className="group relative">
+                                <Info className="w-3 h-3 text-white/30 cursor-help" />
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black/90 border border-white/10 rounded-lg text-[10px] text-white/80 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">Whether to force the exact original medium (e.g. oil, 3D, photography) vs letting the AI drift.</div>
+                              </div>
+                            </div>
+                            <span className="text-[#FF6321] font-mono">{artisticMediumWeight}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="100" 
+                            step="10" 
+                            value={artisticMediumWeight} 
+                            onChange={(e) => setArtisticMediumWeight(Number(e.target.value))} 
+                            className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 )}
 
-                <div className="space-y-3 pt-4 border-t border-white/10">
-                  <label className="block text-xs font-mono text-white/50 uppercase tracking-wider mb-2">Mandatory Subject Traits</label>
-                  <textarea
-                    value={mandatorySubjectTraits}
-                    onChange={(e) => setMandatorySubjectTraits(e.target.value)}
-                    placeholder="e.g., 'finger on lips shushing, deep cleavage, intense gaze'"
-                    className="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:border-[#FF6321]/50 focus:outline-none resize-none h-16"
-                  />
-                  <p className="text-[10px] text-white/50 mt-1">Forces the AI to prioritize these specific physical/expressive details so they are never lost.</p>
-                </div>
-
-                <div className="space-y-3 pt-4 border-t border-white/10">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <label className="block text-xs font-mono text-white/50 uppercase tracking-wider">Style Adherence</label>
-                    <div className="group relative">
-                      <Info className="w-3.5 h-3.5 text-white/40 cursor-help" />
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-black/90 border border-white/10 rounded-xl text-xs text-white/80 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
-                        Controls how strictly the AI should follow the artistic style of the source image vs Hallucinating its own interpretations.
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(['Strict adherence', 'Inspired by', 'Playful interpretation'] as StyleAdherenceType[]).map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => setStyleAdherence(s)}
-                        className={`py-2 px-3 rounded-lg text-xs font-medium transition-all duration-200 border ${
-                          styleAdherence === s 
-                            ? 'bg-[#FF6321]/10 border-[#FF6321] text-[#FF6321]' 
-                            : 'bg-black/50 border-white/10 text-white/60 hover:bg-white/5 hover:text-white'
-                        }`}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-3 pt-4 border-t border-white/10">
-                  <label className="block text-xs font-mono text-white/50 uppercase tracking-wider mb-3">Style Override Presets</label>
-                  <div className="flex flex-wrap gap-2">
-                    {(['None', 'Photorealistic', 'Anime / Manga', 'Cyberpunk', 'Watercolor', '3D Render', 'Pixel Art', 'Abstract Textured (Raised 1-2mm)', 'Impasto Oil Painting', 'Classic Oil Painting', 'Real Hand-Painted Item', 'Neon Cyber-Noir', 'Vintage Pop-Art', 'Surrealism', 'Papercraft / Origami'] as StylePresetType[]).map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => {
-                          if (p === 'None') {
-                            setStylePresets([]);
-                            setStyleAdherence('Strict adherence');
-                          } else {
-                            if (stylePresets.includes(p)) {
-                              setStylePresets(stylePresets.filter(preset => preset !== p));
-                            } else {
-                              setStylePresets([...stylePresets.filter(preset => preset !== 'None'), p]);
-                            }
-                            setStyleAdherence('Playful interpretation');
-                          }
-                        }}
-                        className={`py-1.5 px-3 rounded-lg text-xs font-medium transition-all duration-200 border ${
-                          (p === 'None' && stylePresets.length === 0) || stylePresets.includes(p)
-                            ? 'bg-[#FF6321]/10 border-[#FF6321] text-[#FF6321]' 
-                            : 'bg-black/50 border-white/10 text-white/60 hover:bg-white/5 hover:text-white'
-                        }`}
-                      >
-                        {p}
-                      </button>
-                    ))}
-                  </div>
-
-                  {stylePresets.length > 0 && (
-                    <div className="space-y-2 pt-3">
-                      <div className="flex justify-between text-[10px] font-mono text-white/40 uppercase">
-                        <span>Preset Override Strength</span>
-                        <span className="text-[#FF6321]">{stylePresetStrength}%</span>
-                      </div>
-                      <input 
-                        type="range" 
-                        min="1" 
-                        max="100" 
-                        value={stylePresetStrength} 
-                        onChange={(e) => setStylePresetStrength(parseInt(e.target.value))}
-                        className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#FF6321]"
-                      />
-                      <p className="text-[10px] text-white/40 italic">
-                        Controls how strongly the selected presets overwrite the original image's style. 100% forces the preset style completely.
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3 pt-4 border-t border-white/10">
-                  <label className="block text-xs font-mono text-white/50 uppercase tracking-wider mb-3">Subject Manipulation</label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {[
-                      { label: 'Match Original', desc: 'Accurately describes the original subjects and characters exactly as they appear.' },
-                      { label: 'Keep Original Subject Identity', desc: 'Retains the exact identity of the main character (e.g., Marilyn Monroe) but places them in new poses or situations.' },
-                      { label: 'Reinterpret Subject Concept', desc: 'Keeps the conceptual theme but modifies proportions, expressions, and styling to avoid an exact likeness.' },
-                      { label: 'New Subject/Character', desc: 'Invents completely new characters and subjects that match the original style but represent a different concept.' }
-                    ].map(({ label, desc }) => (
-                      <div key={label} className="group/tooltip relative flex">
-                        <button
-                          onClick={() => setSubjectManipulation(label as SubjectManipulationType)}
-                          className={`w-full py-2 px-3 rounded-lg text-xs font-medium transition-all duration-200 border text-left flex justify-between items-center ${
-                            subjectManipulation === label 
-                              ? 'bg-[#FF6321]/10 border-[#FF6321] text-[#FF6321]' 
-                              : 'bg-black/50 border-white/10 text-white/60 hover:bg-white/5 hover:text-white'
-                          }`}
-                        >
-                          <span className="truncate pr-2">{label}</span>
-                          <Info className="w-3.5 h-3.5 opacity-40 shrink-0" />
-                        </button>
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-black/90 border border-white/10 rounded-xl text-xs text-white/80 opacity-0 group-hover/tooltip:opacity-100 pointer-events-none transition-opacity z-50 shadow-xl whitespace-normal break-words">
-                          {desc}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-3 pt-4 border-t border-white/10">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <label className="block text-xs font-mono text-white/50 uppercase tracking-wider">Style Preservation</label>
-                    <div className="group relative">
-                      <Info className="w-3.5 h-3.5 text-white/40 cursor-help" />
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-black/90 border border-white/10 rounded-xl text-xs text-white/80 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
-                        Adjust how strictly exact features from the source image are maintained in the output.
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between items-center text-xs text-white/70 mb-2">
-                        <div className="flex items-center space-x-1">
-                           <span>Character Likeness</span>
-                           <div className="group relative">
-                             <Info className="w-3 h-3 text-white/30 cursor-help" />
-                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black/90 border border-white/10 rounded-lg text-[10px] text-white/80 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">How strictly the facial features and anatomy of the subject should be preserved.</div>
-                           </div>
-                        </div>
-                        <span className="text-[#FF6321] font-mono">{characterLikenessWeight}%</span>
-                      </div>
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max="100" 
-                        step="10" 
-                        value={characterLikenessWeight} 
-                        onChange={(e) => setCharacterLikenessWeight(Number(e.target.value))} 
-                        className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center text-xs text-white/70 mb-2">
-                        <div className="flex items-center space-x-1">
-                           <span>Color Palette Fidelity</span>
-                           <div className="group relative">
-                             <Info className="w-3 h-3 text-white/30 cursor-help" />
-                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black/90 border border-white/10 rounded-lg text-[10px] text-white/80 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">How strictly the exact original colors should be maintained without shifting.</div>
-                           </div>
-                        </div>
-                        <span className="text-[#FF6321] font-mono">{colorPaletteWeight}%</span>
-                      </div>
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max="100" 
-                        step="10" 
-                        value={colorPaletteWeight} 
-                        onChange={(e) => setColorPaletteWeight(Number(e.target.value))} 
-                        className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center text-xs text-white/70 mb-2">
-                        <div className="flex items-center space-x-1">
-                           <span>Artistic Medium</span>
-                           <div className="group relative">
-                             <Info className="w-3 h-3 text-white/30 cursor-help" />
-                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black/90 border border-white/10 rounded-lg text-[10px] text-white/80 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">Whether to force the exact original medium (e.g. oil, 3D, photography) vs letting the AI drift.</div>
-                           </div>
-                        </div>
-                        <span className="text-[#FF6321] font-mono">{artisticMediumWeight}%</span>
-                      </div>
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max="100" 
-                        step="10" 
-                        value={artisticMediumWeight} 
-                        onChange={(e) => setArtisticMediumWeight(Number(e.target.value))} 
-                        className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
-                      />
-                    </div>
-                  </div>
-                </div>
-
+                {/* NEW ARTWORK SETTINGS */}
                 {generationMode === 'new_artwork' && (
-                  <div className="space-y-3 pt-4 border-t border-white/10">
-                    <label className="block text-xs font-mono text-[#FF6321] uppercase tracking-wider mb-3">New Artwork Composition</label>
-                    <div>
-                      <div className="flex justify-between text-xs text-white/70 mb-2">
-                        <span>Source Element Retention</span>
-                        <span className="text-[#FF6321] font-mono">{elementRetention}%</span>
+                  <>
+                    <div className="space-y-3 pt-4 border-t border-white/10">
+                      <label className="block text-xs font-mono text-[#FF6321] uppercase tracking-wider mb-3">New Artwork Composition</label>
+                      <div>
+                        <div className="flex justify-between text-xs text-white/70 mb-2">
+                          <span>Source Element Retention</span>
+                          <span className="text-[#FF6321] font-mono">{elementRetention}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          step="10" 
+                          value={elementRetention} 
+                          onChange={(e) => setElementRetention(Number(e.target.value))} 
+                          className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                        />
+                        <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
+                          <span>Completely New (0%)</span>
+                          <span>Mixed (50%)</span>
+                          <span>Highly Similar (100%)</span>
+                        </div>
+                        <p className="text-xs text-white/50 mt-3 leading-relaxed">
+                          Controls how many specific source elements (objects, text, layout) are carried over. <br/>
+                          <span className="text-[#FF6321]/80">Note: The main subject is always kept, but given a new pose, expression, and mood.</span>
+                        </p>
                       </div>
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max="100" 
-                        step="10" 
-                        value={elementRetention} 
-                        onChange={(e) => setElementRetention(Number(e.target.value))} 
-                        className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
-                      />
-                      <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
-                        <span>Mostly New Elements</span>
-                        <span>Mixed</span>
-                        <span>Reuse All Elements</span>
-                      </div>
-                      <p className="text-xs text-white/50 mt-3 leading-relaxed">
-                        Controls how many specific objects, texts, and details are extracted from the source image and reused in the completely new composition.
-                      </p>
                     </div>
-                  </div>
+                    
+                    <div className="space-y-3 pt-4 border-t border-white/10">
+                      <label className="block text-xs font-mono text-white/50 uppercase tracking-wider mb-2">Custom Action / Pose</label>
+                      <input
+                        type="text"
+                        value={customAction}
+                        onChange={(e) => setCustomAction(e.target.value)}
+                        placeholder="e.g., 'dancing in the rain', 'looking away shyly'"
+                        className="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:border-[#FF6321]/50 focus:outline-none"
+                      />
+                      <p className="text-[10px] text-white/50">Leave blank to let the AI randomly assign a new action/pose.</p>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-white/10">
+                      <label className="block text-xs font-mono text-white/50 uppercase tracking-wider mb-2">Custom Mood / Vibe</label>
+                      <input
+                        type="text"
+                        value={customMood}
+                        onChange={(e) => setCustomMood(e.target.value)}
+                        placeholder="e.g., 'melancholic', 'energetic and chaotic'"
+                        className="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:border-[#FF6321]/50 focus:outline-none"
+                      />
+                      <p className="text-[10px] text-white/50">Leave blank to let the AI randomly assign a new mood.</p>
+                    </div>
+                  </>
                 )}
 
                 <div className="space-y-3 pt-4 border-t border-white/10">

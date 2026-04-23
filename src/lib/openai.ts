@@ -60,6 +60,8 @@ export interface FocusRegion {
 export interface PromptGenerationOptions {
   modelName: string;
   isCompletelyNew: boolean;
+  customAction?: string;
+  customMood?: string;
   addCreativeElements: boolean;
   strictFontMatching: boolean;
   styleAdherence: StyleAdherenceType;
@@ -336,19 +338,15 @@ export async function generatePromptFromImage(
     textureInstruction = "\n[TEXTURE]: Preserve the natural artistic texture of the source medium without additional overrides.";
   }
 
-  const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that shares the DNA of the source image but is an entirely original composition.
-- DEEP ANALYSIS: Deeply analyze the style, vibe, color palette, and especially the TEXT and specific details of the source.
-- COMPOSITION TRANSFORMATION (MANDATORY): You MUST use a completely different placement, layout, and composition. If the original is centered, make it asymmetrical or scattered. Do NOT duplicate the original layout. The goal is to make it look like a different artwork from the same artist/series.
-- TEXT REUSE (CRITICAL): Extract ALL text/typography from the source image. You MUST reuse this exact text in the new artwork.
-${options.advancedTypographyAnalysis ? `- PRECISE TEXT PLACEMENT: Describe the EXACT COORDINATES or relative positions for the text. Match the original's baseline curvature, tilt, and spatial flow.
-- FONT COLORS & GRADIENTS: Do not use flat colors for text. Detect and describe the full color richness, including gradients (e.g., "yellow to orange sunset gradient"), metallic textures, or multi-layered outlines seen in the source.` : `- PRECISE TEXT PLACEMENT: Note the general placement of text. Match the original's layout.`}
+  const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that is highly original but relatable to the source image's DNA.
+- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source.
+- SUBJECT PRESERVATION & TRANSFORMATION: Keep the EXACT main subject identity (e.g., if it is Marilyn Monroe, a specific character, or iconic figure, retain them). However, you MUST completely change their pose, expression, action, and mood to be entirely different from the source image. ${options.customAction ? `FORCE this specific action/pose: "${options.customAction}". ` : 'Invent a completely new dynamic action or pose. '}
+- MOOD & VIBE: The overall mood and vibe MUST be different from the original. ${options.customMood ? `FORCE this specific mood/vibe: "${options.customMood}". ` : 'Invent a completely new, surprising mood.'}
+- COMPOSITION: Create a completely new background, environment, and layout. Do NOT duplicate the original layout. 
+- TYPOGRAPHY OVERRIDE (CRITICAL): If the source image has typography or text (especially pop-style art), extract ONLY recognized brand names or logos to reuse. Do NOT copy other common words or phrases as they are. Instead, invent and replace them with conceptually related keywords that fit the new vibe.
 - ELEMENT RETENTION (${elementRetention}%): ${retentionInstruction}
-${subjectInstruction}
-- COLOR SYSTEM TRANSFORMATION: Extract the exact hex color codes from the source image. Keep the original color palette but shift tones, contrast, and relationships to fit the new composition. Avoid identical color placement as original.
-- TEXTURE & DETAILING:${textureInstruction} Maintain the exact detailing style of the original (e.g., paint grain, ink bleed, subtle distress). Keep it premium and intentional. Avoid canvas/mockup/frame effects. Maintain high-end finish suitable for print.
-- REMOVE PHYSICAL ARTIFACTS: Explicitly instruct the generator to remove all uneven shadows, uneven lighting, and glare detected in the source image. If there is canvas weave texture present due to a photo taken from a phone or camera, remove all those textures. The final output MUST be a clean digital output ready to print.
-- ORIGINALITY ENFORCEMENT (CRITICAL): The final artwork must NOT be recognizable as a duplicate layout. No tracing or direct overlay resemblance. Must pass as a completely new design inspired by the same idea and style.
-- OUTPUT SPECIFICATIONS: Flat digital artwork ONLY (no mockups, no frames, no environment). Ultra high resolution (8K, 300 DPI). Clean edges, print-ready. Balanced composition with professional finish.`;
+- COLOR SYSTEM: Keep the general color palette but apply it to the new environment and mood.
+- ORIGINALITY ENFORCEMENT: The final artwork must NOT be recognizable as a duplicate layout or tracing. Every background detail and secondary element must be new and original but stylistically relatable to the source.`;
 
   if (isCompletelyNew && addCreativeElements) {
     compositionInstruction = `[COMPLETELY NEW ARTWORK WITH EXTRA ELEMENTS]\n${completelyNewBase}\n- CREATIVE ADDITIONS: Introduce brand new, surprising, and highly creative thematic elements into the background or foreground that elevate the composition.`;
