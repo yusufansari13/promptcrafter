@@ -1,0 +1,5 @@
+{
+  "name": "PromptCrafter Pro",
+  "description": "Analyzes reference images to generate highly detailed prompts for Nano Banana 2/Pro, preserving style, text, and characters while altering composition.",
+  "requestFramePermissions": []
+}
