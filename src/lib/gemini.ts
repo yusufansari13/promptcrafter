@@ -355,8 +355,8 @@ export async function generatePromptFromImage(
   const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that is highly original but relatable to the source image's DNA.
 - DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source.
 - SUBJECT PRESERVATION & TRANSFORMATION: Keep the EXACT main subject identity (e.g., if it is Marilyn Monroe, a specific character, or iconic figure, retain them). However, you MUST completely change their pose, expression, action, and mood to be entirely different from the source image. ${options.customAction ? `FORCE this specific action/pose: "${options.customAction}". ` : 'Invent a completely new dynamic action or pose. '}
-- MOOD & VIBE: The overall mood and vibe MUST be different from the original. ${options.customMood ? `FORCE this specific mood/vibe: "${options.customMood}". ` : 'Invent a completely new, surprising mood.'}
-- COMPOSITION: Create a completely new background, environment, and layout. Do NOT duplicate the original layout. 
+- MOOD & VIBE: The overall mood and vibe MUST remain HIGHLY RELATABLE to the original (e.g., if it's seductive high-end fashion, keep it seductive and high-end). ${options.customMood ? `However, INFUSE this specific mood/vibe nuance: "${options.customMood}". ` : 'Maintain the core emotional resonance and atmosphere of the source.'}
+- COMPOSITION & ENVIRONMENT: Create a completely new background and layout that fits the original relatable vibe perfectly. Do NOT duplicate the original layout, but keep the world-building consistent. 
 - TYPOGRAPHY OVERRIDE (CRITICAL): If the source image has typography or text (especially pop-style art), extract ONLY recognized brand names or logos to reuse. Do NOT copy other common words or phrases as they are. Instead, invent and replace them with conceptually related keywords that fit the new vibe.
 - ELEMENT RETENTION (${elementRetention}%): ${retentionInstruction}
 - COLOR SYSTEM: Keep the general color palette but apply it to the new environment and mood.
