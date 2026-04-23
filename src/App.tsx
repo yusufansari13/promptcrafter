@@ -914,7 +914,7 @@ export default function App() {
                             : 'bg-black/50 border-white/10 text-white/60 hover:bg-white/5 hover:text-white'
                         }`}
                       >
-                        {p} {p === 'Gemini' ? '3.1 Pro' : '4o (Latest)'}
+                        {p} {p === 'Gemini' ? '3.1 Pro' : '5.4 Image 2'}
                       </button>
                     ))}
                   </div>
