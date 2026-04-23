@@ -12,7 +12,7 @@ Your task is to rewrite the prompt to be completely safe while preserving the EX
 - Do not include any markdown formatting blocks like \`\`\` or introductory text. Just return the sanitized prompt.`;
 
   try {
-    const response = await ai.chat.completions.create({ model: 'chatgpt-5.4', messages: [{ role: 'system', content: systemInstruction }, { role: 'user', content: originalPrompt }], temperature: 0.4 });
+    const response = await ai.chat.completions.create({ model: 'gpt-4o', messages: [{ role: 'system', content: systemInstruction }, { role: 'user', content: originalPrompt }], temperature: 0.4 });
     return response.choices[0]?.message?.content || originalPrompt;
   } catch (error: any) {
     console.error('Error sanitizing prompt:', error);
@@ -241,7 +241,7 @@ Do not include markdown formatting blocks like \`\`\`.`;
     }));
 
     const openaiParts = images.map(img => ({ type: 'image_url' as const, image_url: { url: `data:${img.mimeType};base64,${img.base64}` } }));
-    const response = await ai.chat.completions.create({ model: 'chatgpt-5.4', messages: [{ role: 'system', content: systemInstruction }, { role: 'user', content: [ ...openaiParts, { type: 'text' as const, text: 'Analyze this image and generate the maximum fidelity restoration prompt according to the system instructions.' } ] }], temperature: 0.1 });
+    const response = await ai.chat.completions.create({ model: 'gpt-4o', messages: [{ role: 'system', content: systemInstruction }, { role: 'user', content: [ ...openaiParts, { type: 'text' as const, text: 'Analyze this image and generate the maximum fidelity restoration prompt according to the system instructions.' } ] }], temperature: 0.1 });
     return parsePromptResponse(response.choices[0]?.message?.content || '');
   } catch (error: any) {
     console.error('Error generating fidelity prompt:', error);
@@ -505,7 +505,7 @@ Make sure the look and feel of the output image matches the requested style adhe
     }
 
     const response = await ai.chat.completions.create({
-      model: 'chatgpt-5.4',
+      model: 'gpt-4o',
       messages: [
         { role: 'system', content: systemInstruction },
         { role: 'user', content: openaiContent }
