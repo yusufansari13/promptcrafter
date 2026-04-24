@@ -25,6 +25,10 @@ export default function App() {
   const [model, setModel] = useState<ModelType>('Nano Banana 2');
   const [generationMode, setGenerationMode] = useState<GenerationMode>('recreation');
   const [elementRetention, setElementRetention] = useState(70);
+  const [characterReplacementRatio, setCharacterReplacementRatio] = useState(50);
+  const [forensicAnalysis, setForensicAnalysis] = useState(true);
+  const [relatableReplacement, setRelatableReplacement] = useState(true);
+  const [preserveVibeMood, setPreserveVibeMood] = useState(true);
   const [subjectManipulation, setSubjectManipulation] = useState<SubjectManipulationType>('Match Original');
   const [addCreativeElements, setAddCreativeElements] = useState(false);
   const [strictFontMatching, setStrictFontMatching] = useState(false);
@@ -335,6 +339,9 @@ export default function App() {
       const generatedPrompt = await generateFn(payloads, {
         modelName: model,
         isCompletelyNew: generationMode === 'new_artwork',
+        forensicAnalysis,
+        relatableReplacement,
+        preserveVibeMood,
         customAction,
         customMood,
         addCreativeElements,
@@ -348,6 +355,7 @@ export default function App() {
         colorPaletteWeight,
         artisticMediumWeight,
         elementRetention,
+        characterReplacementRatio,
         synthesisMode: synthesisOptions,
         cameraAngle,
         lightingSetup,
@@ -435,6 +443,9 @@ export default function App() {
       const generatedPrompt = await generateFidelityFn(payloads, {
         modelName: model,
         isCompletelyNew: false, // Not used in fidelity mode but required by interface
+        forensicAnalysis: false,
+        relatableReplacement: false,
+        preserveVibeMood: false,
         addCreativeElements: false,
         strictFontMatching: false,
         styleAdherence: 'Strict adherence',
@@ -445,6 +456,7 @@ export default function App() {
         colorPaletteWeight: 100,
         artisticMediumWeight: 100,
         elementRetention: 100,
+        characterReplacementRatio: 0,
         cameraAngle: 'Auto',
         lightingSetup: 'Auto',
         promptDensity: 'Normal',
@@ -706,6 +718,29 @@ export default function App() {
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
+                      <div>
+                        <div className="flex justify-between text-xs text-white/70 mb-2 mt-4">
+                          <span>Character Replacement Ratio</span>
+                          <span className="text-[#FF6321] font-mono">{characterReplacementRatio}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          step="10" 
+                          value={characterReplacementRatio} 
+                          onChange={(e) => setCharacterReplacementRatio(Number(e.target.value))} 
+                          className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                        />
+                        <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
+                          <span>Keep Original (0%)</span>
+                          <span>Mixed Roster (50%)</span>
+                          <span>All New (100%)</span>
+                        </div>
+                        <p className="text-xs text-white/50 mt-3 leading-relaxed">
+                          Controls how many original characters are preserved vs replaced with relatable, culturally equivalent new characters (e.g., swapping Mickey for Richie Rich).
+                        </p>
+                      </div>
                     </div>
                   </div>
                   
@@ -1198,6 +1233,50 @@ export default function App() {
                           Controls how many specific source elements (objects, text, layout) are carried over. <br/>
                           <span className="text-[#FF6321]/80">Note: The main subject is always kept, but given a new pose, expression, and mood.</span>
                         </p>
+                      </div>
+                    </div>
+                    <div className="space-y-3 pt-4 border-t border-white/10">
+                      <label className="block text-xs font-mono text-[#FF6321] uppercase tracking-wider mb-3">Forensic Level Analysis</label>
+                      
+                      <div className="space-y-4">
+                        <label className="flex items-start space-x-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={forensicAnalysis}
+                            onChange={(e) => setForensicAnalysis(e.target.checked)}
+                            className="form-checkbox h-4 w-4 mt-0.5 rounded border-white/20 bg-black/50 text-[#FF6321] focus:ring-[#FF6321] focus:ring-offset-0"
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-sm text-white/80">Deep Forensic Analysis</span>
+                            <span className="text-[10px] text-white/50 mt-1">Deeply analyze background/foreground textures, lighting, all characters, and elements.</span>
+                          </div>
+                        </label>
+
+                        <label className="flex items-start space-x-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={relatableReplacement}
+                            onChange={(e) => setRelatableReplacement(e.target.checked)}
+                            className="form-checkbox h-4 w-4 mt-0.5 rounded border-white/20 bg-black/50 text-[#FF6321] focus:ring-[#FF6321] focus:ring-offset-0"
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-sm text-white/80">Relatable Replacement</span>
+                            <span className="text-[10px] text-white/50 mt-1">Ensure replaced elements are relatable to the source image's context.</span>
+                          </div>
+                        </label>
+
+                        <label className="flex items-start space-x-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={preserveVibeMood}
+                            onChange={(e) => setPreserveVibeMood(e.target.checked)}
+                            className="form-checkbox h-4 w-4 mt-0.5 rounded border-white/20 bg-black/50 text-[#FF6321] focus:ring-[#FF6321] focus:ring-offset-0"
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-sm text-white/80">Match Source Vibe & Mood</span>
+                            <span className="text-[10px] text-white/50 mt-1">Force the new artwork to strictly match the original vibe and emotional mood.</span>
+                          </div>
+                        </label>
                       </div>
                     </div>
                     

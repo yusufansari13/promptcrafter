@@ -60,6 +60,9 @@ export interface FocusRegion {
 export interface PromptGenerationOptions {
   modelName: string;
   isCompletelyNew: boolean;
+  forensicAnalysis?: boolean;
+  relatableReplacement?: boolean;
+  preserveVibeMood?: boolean;
   customAction?: string;
   customMood?: string;
   addCreativeElements: boolean;
@@ -73,6 +76,7 @@ export interface PromptGenerationOptions {
   colorPaletteWeight: number;
   artisticMediumWeight: number;
   elementRetention: number;
+  characterReplacementRatio?: number;
   synthesisMode?: { subjectImage: ImagePayload, styleImage: ImagePayload } | null;
   cameraAngle: string;
   lightingSetup: string;
@@ -261,6 +265,9 @@ export async function generatePromptFromImage(
   const {
     modelName,
     isCompletelyNew,
+    forensicAnalysis,
+    relatableReplacement,
+    preserveVibeMood,
     addCreativeElements,
     strictFontMatching,
     styleAdherence,
@@ -271,6 +278,7 @@ export async function generatePromptFromImage(
     colorPaletteWeight,
     artisticMediumWeight,
     elementRetention,
+    characterReplacementRatio,
     synthesisMode,
     cameraAngle,
     lightingSetup,
@@ -338,9 +346,31 @@ export async function generatePromptFromImage(
     textureInstruction = "\n[TEXTURE]: Preserve the natural artistic texture of the source medium without additional overrides.";
   }
 
-  const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that is highly original but relatable to the source image's DNA.
-- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source.
-- SUBJECT PRESERVATION & TRANSFORMATION: Keep the EXACT main subject identity (e.g., if it is Marilyn Monroe, a specific character, or iconic figure, retain them). However, you MUST completely change their pose, expression, action, and mood to be entirely different from the source image. ${options.customAction ? `FORCE this specific action/pose: "${options.customAction}". ` : 'Invent a completely new dynamic action or pose. '}
+  let forensicInstruction = "";
+  if (forensicAnalysis) {
+    forensicInstruction += `\n- DEEP FORENSIC ANALYSIS: Perform a forensic-level analysis of background and foreground textures, lighting, all characters present, and every specific element in the composition. Analyze the micro-details of how light interacts with surfaces, the material properties of objects, and the structural composition of the scene.`;
+  }
+  if (relatableReplacement) {
+    forensicInstruction += `\n- RELATABLE REPLACEMENT: Ensure that any replaced or newly invented elements are contextually and thematically relatable to the source image. Do not introduce elements that clash with the original universe or logic.`;
+  }
+  if (preserveVibeMood) {
+    forensicInstruction += `\n- VIBE & MOOD PRESERVATION: The new artwork MUST strictly match the exact vibe, mood, emotional resonance, and atmosphere of the source image, even if the subjects and actions have completely changed.`;
+  }
+
+  let characterReplacementInstruction = "";
+  if (isCompletelyNew && characterReplacementRatio !== undefined) {
+    if (characterReplacementRatio === 0) {
+      characterReplacementInstruction = `\n- CHARACTER PRESERVATION (0% REPLACEMENT): You MUST identify and KEEP EVERY ORIGINAL CHARACTER from the source image. Do NOT replace any of them. Only change their poses, expressions, and actions.`;
+    } else if (characterReplacementRatio === 100) {
+      characterReplacementInstruction = `\n- TOTAL CHARACTER REPLACEMENT (100% REPLACEMENT): Identify all characters in the source. You MUST REPLACE EVERY SINGLE ONE with a completely new, relatable, and culturally equivalent character (e.g., swapping Mickey Mouse for Richie Rich, or Michael Jordan for Ronaldo). NO original characters should remain.`;
+    } else {
+      characterReplacementInstruction = `\n- MIXED CHARACTER REPLACEMENT (${characterReplacementRatio}% REPLACEMENT): Identify all characters in the source. You MUST REPLACE exactly ${characterReplacementRatio}% of them with new, relatable, culturally equivalent characters (e.g., swapping Mickey Mouse for Richie Rich). Keep the remaining ${100 - characterReplacementRatio}% of original characters, but change their poses and actions. Ensure the mix feels natural and cohesive within the relatable vibe.`;
+    }
+  }
+
+  const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that is highly original but relatable to the source image's DNA.${forensicInstruction}
+- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source.${characterReplacementInstruction}
+- SUBJECT PRESERVATION & TRANSFORMATION: ${characterReplacementRatio && characterReplacementRatio > 0 ? "Follow the Character Replacement instructions above. For any characters kept, you" : "Keep the EXACT main subject identity (e.g., if it is Marilyn Monroe, a specific character, or iconic figure, retain them). However, you"} MUST completely change their pose, expression, action, and mood to be entirely different from the source image. ${options.customAction ? `FORCE this specific action/pose: "${options.customAction}". ` : 'Invent a completely new dynamic action or pose. '}
 - MOOD & VIBE: The overall mood and vibe MUST remain HIGHLY RELATABLE to the original (e.g., if it's seductive high-end fashion, keep it seductive and high-end). ${options.customMood ? `However, INFUSE this specific mood/vibe nuance: "${options.customMood}". ` : 'Maintain the core emotional resonance and atmosphere of the source.'}
 - COMPOSITION & ENVIRONMENT: Create a completely new background and layout that fits the original relatable vibe perfectly. Do NOT duplicate the original layout, but keep the world-building consistent. 
 - TYPOGRAPHY OVERRIDE (CRITICAL): If the source image has typography or text (especially pop-style art), extract ONLY recognized brand names or logos to reuse. Do NOT copy other common words or phrases as they are. Instead, invent and replace them with conceptually related keywords that fit the new vibe.
