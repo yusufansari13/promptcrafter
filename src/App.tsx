@@ -724,55 +724,7 @@ export default function App() {
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
-                      <div>
-                        <div className="flex justify-between text-xs text-white/70 mb-2 mt-4">
-                          <span>Character Replacement Ratio</span>
-                          <span className="text-[#FF6321] font-mono">{characterReplacementRatio}%</span>
-                        </div>
-                        <input 
-                          type="range" 
-                          min="0" 
-                          max="100" 
-                          step="10" 
-                          value={characterReplacementRatio} 
-                          onChange={(e) => setCharacterReplacementRatio(Number(e.target.value))} 
-                          className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
-                        />
-                        <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
-                          <span>Keep Original (0%)</span>
-                          <span>Mixed Roster (50%)</span>
-                          <span>All New (100%)</span>
-                        </div>
-                        <p className="text-xs text-white/50 mt-3 leading-relaxed">
-                           Controls how many original characters are preserved vs replaced with relatable, culturally equivalent new characters (e.g., swapping Mickey for Richie Rich).
-                         </p>
-                       </div>
-
-                       <div className="mt-6">
-                         <div className="flex justify-between text-xs text-white/70 mb-2">
-                           <span>Typography Evolution (Source vs New)</span>
-                           <span className="text-[#FF6321] font-mono">{typographyEvolutionRatio}%</span>
-                         </div>
-                         <input 
-                           type="range" 
-                           min="0" 
-                           max="100" 
-                           step="10" 
-                           value={typographyEvolutionRatio} 
-                           onChange={(e) => setTypographyEvolutionRatio(Number(e.target.value))} 
-                           className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
-                         />
-                         <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
-                           <span>Keep Original (0%)</span>
-                           <span>Mixed (50%)</span>
-                           <span>All New (100%)</span>
-                         </div>
-                         <p className="text-xs text-white/50 mt-3 leading-relaxed">
-                           Controls how much of the original text content is preserved vs replaced with new thematic keywords.
-                           <br/><span className="text-[#FF6321]/80">Note: For Pop/Graffiti styles, all text will be rendered as handmade/sprayed.</span>
-                         </p>
-                       </div>
-                     </div>
+                    </div>
                   </div>
                   
                   {item.thumbnailUrl && (
