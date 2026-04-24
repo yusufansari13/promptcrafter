@@ -26,6 +26,8 @@ export default function App() {
   const [generationMode, setGenerationMode] = useState<GenerationMode>('recreation');
   const [elementRetention, setElementRetention] = useState(70);
   const [characterReplacementRatio, setCharacterReplacementRatio] = useState(50);
+  const [subjectEvolutionRatio, setSubjectEvolutionRatio] = useState(50);
+  const [typographyEvolutionRatio, setTypographyEvolutionRatio] = useState(50);
   const [forensicAnalysis, setForensicAnalysis] = useState(true);
   const [relatableReplacement, setRelatableReplacement] = useState(true);
   const [preserveVibeMood, setPreserveVibeMood] = useState(true);
@@ -356,6 +358,8 @@ export default function App() {
         artisticMediumWeight,
         elementRetention,
         characterReplacementRatio,
+        subjectEvolutionRatio,
+        typographyEvolutionRatio,
         synthesisMode: synthesisOptions,
         cameraAngle,
         lightingSetup,
@@ -457,6 +461,8 @@ export default function App() {
         artisticMediumWeight: 100,
         elementRetention: 100,
         characterReplacementRatio: 0,
+        subjectEvolutionRatio: 0,
+        typographyEvolutionRatio: 0,
         cameraAngle: 'Auto',
         lightingSetup: 'Auto',
         promptDensity: 'Normal',
@@ -738,10 +744,35 @@ export default function App() {
                           <span>All New (100%)</span>
                         </div>
                         <p className="text-xs text-white/50 mt-3 leading-relaxed">
-                          Controls how many original characters are preserved vs replaced with relatable, culturally equivalent new characters (e.g., swapping Mickey for Richie Rich).
-                        </p>
-                      </div>
-                    </div>
+                           Controls how many original characters are preserved vs replaced with relatable, culturally equivalent new characters (e.g., swapping Mickey for Richie Rich).
+                         </p>
+                       </div>
+
+                       <div className="mt-6">
+                         <div className="flex justify-between text-xs text-white/70 mb-2">
+                           <span>Typography Evolution (Source vs New)</span>
+                           <span className="text-[#FF6321] font-mono">{typographyEvolutionRatio}%</span>
+                         </div>
+                         <input 
+                           type="range" 
+                           min="0" 
+                           max="100" 
+                           step="10" 
+                           value={typographyEvolutionRatio} 
+                           onChange={(e) => setTypographyEvolutionRatio(Number(e.target.value))} 
+                           className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                         />
+                         <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
+                           <span>Keep Original (0%)</span>
+                           <span>Mixed (50%)</span>
+                           <span>All New (100%)</span>
+                         </div>
+                         <p className="text-xs text-white/50 mt-3 leading-relaxed">
+                           Controls how much of the original text content is preserved vs replaced with new thematic keywords.
+                           <br/><span className="text-[#FF6321]/80">Note: For Pop/Graffiti styles, all text will be rendered as handmade/sprayed.</span>
+                         </p>
+                       </div>
+                     </div>
                   </div>
                   
                   {item.thumbnailUrl && (
@@ -1230,11 +1261,83 @@ export default function App() {
                           <span>Highly Similar (100%)</span>
                         </div>
                         <p className="text-xs text-white/50 mt-3 leading-relaxed">
-                          Controls how many specific source elements (objects, text, layout) are carried over. <br/>
-                          <span className="text-[#FF6321]/80">Note: The main subject is always kept, but given a new pose, expression, and mood.</span>
+                          Controls how many specific source elements (objects, text, layout) are carried over.
                         </p>
                       </div>
-                    </div>
+
+                      <div className="mt-6">
+                        <div className="flex justify-between text-xs text-white/70 mb-2">
+                          <span>Subject Evolution (Pose/Mood/Vibe)</span>
+                          <span className="text-[#FF6321] font-mono">{subjectEvolutionRatio}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          step="10" 
+                          value={subjectEvolutionRatio} 
+                          onChange={(e) => setSubjectEvolutionRatio(Number(e.target.value))} 
+                          className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                        />
+                        <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
+                          <span>Match Source (0%)</span>
+                          <span>Evolved (50%)</span>
+                          <span>Completely New (100%)</span>
+                        </div>
+                        <p className="text-xs text-white/50 mt-3 leading-relaxed">
+                          Controls how much the main subject's pose, facial expression, mood, and overall aesthetic vibe deviate from the source.
+                        </p>
+                      </div>
+
+                      <div className="mt-6">
+                        <div className="flex justify-between text-xs text-white/70 mb-2">
+                          <span>Character Replacement Ratio</span>
+                          <span className="text-[#FF6321] font-mono">{characterReplacementRatio}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          step="10" 
+                          value={characterReplacementRatio} 
+                          onChange={(e) => setCharacterReplacementRatio(Number(e.target.value))} 
+                          className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                        />
+                        <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
+                          <span>Keep Original (0%)</span>
+                          <span>Mixed Roster (50%)</span>
+                          <span>All New (100%)</span>
+                        </div>
+                        <p className="text-xs text-white/50 mt-3 leading-relaxed">
+                           Controls how many original characters are preserved vs replaced with relatable, culturally equivalent new characters (e.g., swapping Mickey for Richie Rich).
+                         </p>
+                       </div>
+
+                       <div className="mt-6">
+                         <div className="flex justify-between text-xs text-white/70 mb-2">
+                           <span>Typography Evolution (Source vs New)</span>
+                           <span className="text-[#FF6321] font-mono">{typographyEvolutionRatio}%</span>
+                         </div>
+                         <input 
+                           type="range" 
+                           min="0" 
+                           max="100" 
+                           step="10" 
+                           value={typographyEvolutionRatio} 
+                           onChange={(e) => setTypographyEvolutionRatio(Number(e.target.value))} 
+                           className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                         />
+                         <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
+                           <span>Keep Original (0%)</span>
+                           <span>Mixed (50%)</span>
+                           <span>All New (100%)</span>
+                         </div>
+                         <p className="text-xs text-white/50 mt-3 leading-relaxed">
+                           Controls how much of the original text content is preserved vs replaced with new thematic keywords.
+                           <br/><span className="text-[#FF6321]/80">Note: For Pop/Graffiti styles, all text will be rendered as handmade/sprayed.</span>
+                         </p>
+                       </div>
+                     </div>
                     <div className="space-y-3 pt-4 border-t border-white/10">
                       <label className="block text-xs font-mono text-[#FF6321] uppercase tracking-wider mb-3">Forensic Level Analysis</label>
                       

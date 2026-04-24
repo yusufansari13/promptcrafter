@@ -77,6 +77,8 @@ export interface PromptGenerationOptions {
   artisticMediumWeight: number;
   elementRetention: number;
   characterReplacementRatio?: number;
+  subjectEvolutionRatio?: number;
+  typographyEvolutionRatio?: number;
   synthesisMode?: { subjectImage: ImagePayload, styleImage: ImagePayload } | null;
   cameraAngle: string;
   lightingSetup: string;
@@ -279,7 +281,9 @@ export async function generatePromptFromImage(
     artisticMediumWeight,
     elementRetention,
     characterReplacementRatio,
-    synthesisMode,
+      subjectEvolutionRatio,
+      typographyEvolutionRatio,
+      synthesisMode,
     cameraAngle,
     lightingSetup,
     promptDensity,
@@ -348,10 +352,12 @@ export async function generatePromptFromImage(
 
   let forensicInstruction = "";
   if (forensicAnalysis) {
-    forensicInstruction += `\n- DEEP FORENSIC ANALYSIS: Perform a forensic-level analysis of background and foreground textures, lighting, all characters present, and every specific element in the composition. Analyze the micro-details of how light interacts with surfaces, the material properties of objects, and the structural composition of the scene.`;
+    forensicInstruction += `\n- DEEP FORENSIC ANALYSIS: Perform a forensic-level analysis of background and foreground textures, lighting, all characters present, and every specific element in the composition. Analyze the micro-details of how light interacts with surfaces, the material properties of objects, and the structural composition of the scene.
+- MICRO-DECORATION DETECTION: Pay extreme attention to small decorative elements, abstract shapes, and subtle layers (e.g., hand-drawn hearts, stars, crowns, scribbles, abstract geometric patterns, or layered textures like those found in the Marilyn Monroe pop-art image).`;
   }
   if (relatableReplacement) {
-    forensicInstruction += `\n- RELATABLE REPLACEMENT: Ensure that any replaced or newly invented elements are contextually and thematically relatable to the source image. Do not introduce elements that clash with the original universe or logic.`;
+    forensicInstruction += `\n- RELATABLE REPLACEMENT: Ensure that any replaced or newly invented elements are contextually and thematically relatable to the source image. Do not introduce elements that clash with the original universe or logic.
+- DECORATIVE ELEMENT SWAPS: For every small decorative element detected (hearts, shapes, abstract designs), replace them with brand new, original, but contextually relatable elements. For example, if you see hand-drawn hearts, replace them with original hand-drawn icons like small lightning bolts, diamonds, or unique abstract symbols that maintain the same "doodle" or "street art" energy but are distinctly original.`;
   }
   if (preserveVibeMood) {
     forensicInstruction += `\n- VIBE & MOOD PRESERVATION: The new artwork MUST strictly match the exact vibe, mood, emotional resonance, and atmosphere of the source image, even if the subjects and actions have completely changed.`;
@@ -368,12 +374,35 @@ export async function generatePromptFromImage(
     }
   }
 
+  let subjectEvolutionInstruction = "";
+  if (isCompletelyNew && subjectEvolutionRatio !== undefined) {
+    if (subjectEvolutionRatio === 0) {
+      subjectEvolutionInstruction = `\n- SUBJECT PRESERVATION (0% EVOLUTION): You MUST perfectly replicate the main subject's pose, facial expression, emotional mood, and aesthetic vibe exactly as seen in the source image. Do NOT deviate from their original posture or feeling.`;
+    } else if (subjectEvolutionRatio === 100) {
+      subjectEvolutionInstruction = `\n- SUBJECT REVOLUTION (100% EVOLUTION): You MUST completely transform the main subject. Give them a radically different pose, a new and unexpected facial expression, a completely different emotional mood, and a fresh aesthetic vibe that differs significantly from the source.`;
+    } else {
+      subjectEvolutionInstruction = `\n- SUBJECT EVOLUTION (${subjectEvolutionRatio}% EVOLUTION): You MUST evolve the main subject's presentation. Balance the source's characteristics with new interpretations. Shift their pose, expression, mood, and vibe by approximately ${subjectEvolutionRatio}%, where 0% is an exact match and 100% is a total departure.`;
+    }
+  }
+
+  let typographyInstruction = "";
+  if (isCompletelyNew && typographyEvolutionRatio !== undefined) {
+    if (typographyEvolutionRatio === 0) {
+      typographyInstruction = `\n- TYPOGRAPHY PRESERVATION (0% EVOLUTION): You MUST identify and KEEP ALL ORIGINAL TEXT and TYPOGRAPHY from the source image. Re-use the exact same words and phrases.`;
+    } else if (typographyEvolutionRatio === 100) {
+      typographyInstruction = `\n- TYPOGRAPHY REVOLUTION (100% EVOLUTION): You MUST REPLACE ALL ORIGINAL TEXT with completely new, thematic keywords and phrases that fit the new composition while maintaining the same world-building DNA.`;
+    } else {
+      typographyInstruction = `\n- TYPOGRAPHY EVOLUTION (${typographyEvolutionRatio}% EVOLUTION): You MUST replace approximately ${typographyEvolutionRatio}% of the source text with new, relatable thematic keywords. Keep the remaining ${100 - typographyEvolutionRatio}% of original text/brand names.`;
+    }
+    typographyInstruction += `\n- CRITICAL TYPOGRAPHY RENDERING: If the source image is in a Pop Art, Street Art, or Graffiti style, you MUST ENSURE that EVERY LETTER is rendered as if it were hand-painted, sprayed, or handmade. NEVER use straight lines, digital fonts, or perfect alignments. The letters must be chaotic, uniquely designed, and organically integrated into the physical layers of the artwork.`;
+  }
+
   const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that is highly original but relatable to the source image's DNA.${forensicInstruction}
-- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source.${characterReplacementInstruction}
-- SUBJECT PRESERVATION & TRANSFORMATION: ${characterReplacementRatio && characterReplacementRatio > 0 ? "Follow the Character Replacement instructions above. For any characters kept, you" : "Keep the EXACT main subject identity (e.g., if it is Marilyn Monroe, a specific character, or iconic figure, retain them). However, you"} MUST completely change their pose, expression, action, and mood to be entirely different from the source image. ${options.customAction ? `FORCE this specific action/pose: "${options.customAction}". ` : 'Invent a completely new dynamic action or pose. '}
+- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source.${characterReplacementInstruction}${subjectEvolutionInstruction}${typographyInstruction}
+- SUBJECT PRESERVATION & TRANSFORMATION: ${characterReplacementRatio && characterReplacementRatio > 0 ? "Follow the Character Replacement instructions above. For any characters kept, you" : "Keep the EXACT main subject identity (e.g., if it is Marilyn Monroe, a specific character, or iconic figure, retain them)."} ${subjectEvolutionRatio !== undefined ? "Apply the Subject Evolution instructions above to their pose, expression, mood, and vibe." : "However, you MUST completely change their pose, expression, action, and mood to be entirely different from the source image."} ${options.customAction ? `FORCE this specific action/pose: "${options.customAction}". ` : ''}
 - MOOD & VIBE: The overall mood and vibe MUST remain HIGHLY RELATABLE to the original (e.g., if it's seductive high-end fashion, keep it seductive and high-end). ${options.customMood ? `However, INFUSE this specific mood/vibe nuance: "${options.customMood}". ` : 'Maintain the core emotional resonance and atmosphere of the source.'}
 - COMPOSITION & ENVIRONMENT: Create a completely new background and layout that fits the original relatable vibe perfectly. Do NOT duplicate the original layout, but keep the world-building consistent. 
-- TYPOGRAPHY OVERRIDE (CRITICAL): If the source image has typography or text (especially pop-style art), extract ONLY recognized brand names or logos to reuse. Do NOT copy other common words or phrases as they are. Instead, invent and replace them with conceptually related keywords that fit the new vibe.
+- TYPOGRAPHY OVERRIDE (CRITICAL): ${typographyEvolutionRatio !== undefined ? "Follow the Typography Evolution and Rendering instructions above." : "If the source image has typography or text (especially pop-style art), extract ONLY recognized brand names or logos to reuse. Do NOT copy other common words or phrases as they are. Instead, invent and replace them with conceptually related keywords that fit the new vibe."}
 - ELEMENT RETENTION (${elementRetention}%): ${retentionInstruction}
 - COLOR SYSTEM: Keep the general color palette but apply it to the new environment and mood.
 - ORIGINALITY ENFORCEMENT: The final artwork must NOT be recognizable as a duplicate layout or tracing. Every background detail and secondary element must be new and original but stylistically relatable to the source.`;
