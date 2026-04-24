@@ -394,7 +394,11 @@ export async function generatePromptFromImage(
     } else {
       typographyInstruction = `\n- TYPOGRAPHY EVOLUTION (${typographyEvolutionRatio}% EVOLUTION): You MUST replace approximately ${typographyEvolutionRatio}% of the source text with new, relatable thematic keywords. Keep the remaining ${100 - typographyEvolutionRatio}% of original text/brand names.`;
     }
-    typographyInstruction += `\n- CRITICAL TYPOGRAPHY RENDERING: If the source image is in a Pop Art, Street Art, or Graffiti style, you MUST ENSURE that EVERY LETTER is rendered as if it were hand-painted, sprayed, or handmade. NEVER use straight lines, digital fonts, or perfect alignments. The letters must be chaotic, uniquely designed, and organically integrated into the physical layers of the artwork.`;
+    typographyInstruction += `\n- CRITICAL TYPOGRAPHY RENDERING: If the source image is in a Pop Art, Street Art, or Graffiti style, you MUST ENSURE:
+    1. ZERO REPETITION: Every word used must be UNIQUE. Do NOT repeat words like "REBEL" or "ICON" multiple times in the same image.
+    2. MAXIMUM VARIETY: Every single word MUST have a DIFFERENT font, DIFFERENT weight (bold vs thin), and DIFFERENT handmade style (marker vs spray paint vs brush).
+    3. CHAOTIC ANGLES: Words must NEVER be on the same horizontal plane. Every word MUST have a UNIQUE angle (some tilted left, some right, some steep, some shallow). 
+    4. HANDMADE DNA: Every letter must be rendered as if it were hand-painted, sprayed, or handmade. NEVER use straight lines, digital fonts, or perfect alignments. The letters must be chaotic and organically integrated into the physical layers of the artwork.`;
   }
 
   const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that is highly original but RELATABLE to the source image's DNA.${forensicInstruction}
@@ -405,6 +409,11 @@ export async function generatePromptFromImage(
 - SUBJECT PRESERVATION & TRANSFORMATION: ${characterReplacementRatio && characterReplacementRatio > 0 ? "Follow the Character Replacement instructions above. For any characters kept, you" : "Keep the EXACT main subject identity (e.g., if it is Marilyn Monroe, a specific character, or iconic figure, retain them)."} ${subjectEvolutionRatio !== undefined ? "Apply the Subject Evolution instructions above to their pose, expression, mood, and vibe." : "However, you MUST completely change their pose, expression, action, and mood to be entirely different from the source image."} ${options.customAction ? `FORCE this specific action/pose: "${options.customAction}". ` : ''}
 - MOOD & VIBE: The overall mood and vibe MUST remain HIGHLY RELATABLE to the original. If the source is seductive, sophisticated, and high-end fashion, the new artwork must NOT become "pop-cartoonish" or "childish". It must retain the adult, high-fashion, and cinematic atmosphere of the original. ${options.customMood ? `However, INFUSE this specific mood/vibe nuance: "${options.customMood}". ` : 'Maintain the core emotional resonance and atmosphere of the source.'}
 - COMPOSITION & ENVIRONMENT: Create a completely new background and layout that fits the original relatable vibe perfectly. Do NOT duplicate the original layout, but keep the world-building consistent. 
+- ORGANIC BLENDING & PHYSICAL TEXTURE (CRITICAL):
+  1. The entire image MUST look like a PHYSICAL, HAND-PAINTED piece of art. Incorporate visible brush strokes, paint splatters, canvas texture, and realistic ink drips.
+  2. The foreground subject MUST BLEND SEAMLESSLY with the background. They should not look like a "sticker" placed on top.
+  3. Elements (typography, shapes, splashes) MUST physically interact with the subject. Some elements should go BEHIND the subject, while others should OVERLAP and partially cover the subject's edges or clothing, creating a sense of deep, physical layering.
+  4. Use "edge-bleeding" where colors from the background subtly spill into the edges of the foreground subject for a unified, cohesive atmosphere.
 - TYPOGRAPHY OVERRIDE (CRITICAL): ${typographyEvolutionRatio !== undefined ? "Follow the Typography Evolution and Rendering instructions above." : "If the source image has typography or text (especially pop-style art), extract ONLY recognized brand names or logos to reuse. Do NOT copy other common words or phrases as they are. Instead, invent and replace them with conceptually related keywords that fit the new vibe."}
 - ELEMENT RETENTION (${elementRetention}%): ${retentionInstruction}
 - COLOR SYSTEM: Keep the general color palette but apply it to the new environment and mood.
