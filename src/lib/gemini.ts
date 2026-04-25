@@ -85,6 +85,8 @@ export interface PromptGenerationOptions {
   subjectEvolutionRatio?: number;
   typographyEvolutionRatio?: number;
   colorCompositionEvolution?: number;
+  hairstyleEvolution?: number;
+  cameraAngleEvolution?: number;
   synthesisMode?: { subjectImage: ImagePayload, styleImage: ImagePayload } | null;
   cameraAngle: string;
   lightingSetup: string;
@@ -297,9 +299,11 @@ export async function generatePromptFromImage(
     elementRetention,
     characterReplacementRatio,
       subjectEvolutionRatio,
-      typographyEvolutionRatio,
-      colorCompositionEvolution,
-      synthesisMode,
+    typographyEvolutionRatio,
+    colorCompositionEvolution,
+    hairstyleEvolution,
+    cameraAngleEvolution,
+    synthesisMode,
     cameraAngle,
     lightingSetup,
     promptDensity,
@@ -418,18 +422,40 @@ export async function generatePromptFromImage(
   }
 
   let colorCompositionInstruction = "";
-  if (isCompletelyNew && colorCompositionEvolution !== undefined) {
-    if (colorCompositionEvolution === 0) {
-      colorCompositionInstruction = `\n- COLOR & COMPOSITION (0% EVOLUTION): Exactly match the source image's color palette, typography placement, and overall composition structure relative to the subject.`;
-    } else if (colorCompositionEvolution === 100) {
-      colorCompositionInstruction = `\n- COLOR & COMPOSITION (100% EVOLUTION): Invent a completely new color palette, composition, and typography placement. Completely reimagine the environment and layout while keeping the main subject and vibe intact.`;
-    } else {
-      colorCompositionInstruction = `\n- COLOR & COMPOSITION (${colorCompositionEvolution}% EVOLUTION): Shift the color palette, typography placement, and composition by approximately ${colorCompositionEvolution}%. Blend the source's color scheme and layout with entirely new complementary colors and dynamic placements.`;
+    if (isCompletelyNew && colorCompositionEvolution !== undefined) {
+      if (colorCompositionEvolution === 0) {
+        colorCompositionInstruction = `\n- COLOR & COMPOSITION (0% EVOLUTION): Exactly match the source image's color palette, typography placement, and overall composition structure relative to the subject.`;
+      } else if (colorCompositionEvolution === 100) {
+        colorCompositionInstruction = `\n- COLOR & COMPOSITION (100% EVOLUTION): Invent a completely new color palette, composition, and typography placement. Completely reimagine the environment and layout while keeping the main subject and vibe intact.`;
+      } else {
+        colorCompositionInstruction = `\n- COLOR & COMPOSITION (${colorCompositionEvolution}% EVOLUTION): Shift the color palette, typography placement, and composition by approximately ${colorCompositionEvolution}%. Blend the source's color scheme and layout with entirely new complementary colors and dynamic placements.`;
+      }
     }
-  }
+
+    let hairstyleInstruction = "";
+    if (isCompletelyNew && hairstyleEvolution !== undefined) {
+      if (hairstyleEvolution === 0) {
+        hairstyleInstruction = `\n- HAIRSTYLE (0% EVOLUTION): You MUST perfectly replicate the main subject's exact hairstyle, length, and hair color as seen in the source image.`;
+      } else if (hairstyleEvolution === 100) {
+        hairstyleInstruction = `\n- HAIRSTYLE (100% EVOLUTION): You MUST give the main subject a completely new, unexpected hairstyle, length, and color that fits the new vibe.`;
+      } else {
+        hairstyleInstruction = `\n- HAIRSTYLE (${hairstyleEvolution}% EVOLUTION): Evolve the main subject's hairstyle by ${hairstyleEvolution}%. Blend their original hair characteristics with a fresh, thematic new cut or style.`;
+      }
+    }
+
+    let cameraAngleEvolutionInstruction = "";
+    if (isCompletelyNew && cameraAngleEvolution !== undefined) {
+      if (cameraAngleEvolution === 0) {
+        cameraAngleEvolutionInstruction = `\n- CAMERA ANGLE & PERSPECTIVE (0% EVOLUTION): Keep the exact same camera angle, perspective, and framing of the main subject as the source image.`;
+      } else if (cameraAngleEvolution === 100) {
+        cameraAngleEvolutionInstruction = `\n- CAMERA ANGLE & PERSPECTIVE (100% EVOLUTION): Completely change the camera angle and perspective of the main subject (e.g., switch from a front-facing portrait to a high-angle, low-angle, profile, or dynamic cinematic shot).`;
+      } else {
+        cameraAngleEvolutionInstruction = `\n- CAMERA ANGLE & PERSPECTIVE (${cameraAngleEvolution}% EVOLUTION): Shift the camera angle and perspective of the main subject by approximately ${cameraAngleEvolution}% from the original viewpoint to create a fresh dynamic while retaining some familiarity.`;
+      }
+    }
 
   const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that is highly original but RELATABLE to the source image's DNA.${forensicInstruction}
-- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source. Notice if the subject is a REAL PHOTOGRAPH or an illustration.${characterReplacementInstruction}${subjectEvolutionInstruction}${typographyInstruction}${colorCompositionInstruction}
+- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source. Notice if the subject is a REAL PHOTOGRAPH or an illustration.${characterReplacementInstruction}${subjectEvolutionInstruction}${hairstyleInstruction}${cameraAngleEvolutionInstruction}${typographyInstruction}${colorCompositionInstruction}
 - SUBJECT RENDERING & ANATOMY (CRITICAL): 
   1. If the source image features a PHOTOREALISTIC person (like Marilyn Monroe), you MUST maintain that PHOTOREALISTIC, high-fashion photography quality. Do NOT make them look like a 3D model, cartoon, or digital illustration.
   2. You MUST ensure PERFECT ANATOMICAL CORRECTNESS. The subject must have EXACTLY TWO HANDS and five fingers per hand. Do NOT allow overlapping limbs or extra hands to be generated.

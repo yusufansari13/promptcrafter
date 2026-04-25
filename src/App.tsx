@@ -29,6 +29,8 @@ export default function App() {
   const [subjectEvolutionRatio, setSubjectEvolutionRatio] = useState(50);
   const [typographyEvolutionRatio, setTypographyEvolutionRatio] = useState(50);
   const [colorCompositionEvolution, setColorCompositionEvolution] = useState(50);
+  const [hairstyleEvolution, setHairstyleEvolution] = useState(50);
+  const [cameraAngleEvolution, setCameraAngleEvolution] = useState(50);
   const [forensicAnalysis, setForensicAnalysis] = useState(true);
   const [relatableReplacement, setRelatableReplacement] = useState(true);
   const [preserveVibeMood, setPreserveVibeMood] = useState(true);
@@ -362,6 +364,8 @@ export default function App() {
         subjectEvolutionRatio,
         typographyEvolutionRatio,
         colorCompositionEvolution,
+        hairstyleEvolution,
+        cameraAngleEvolution,
         synthesisMode: synthesisOptions,
         cameraAngle,
         lightingSetup,
@@ -466,6 +470,8 @@ export default function App() {
         subjectEvolutionRatio: 0,
         typographyEvolutionRatio: 0,
         colorCompositionEvolution: 0,
+        hairstyleEvolution: 0,
+        cameraAngleEvolution: 0,
         cameraAngle: 'Auto',
         lightingSetup: 'Auto',
         promptDensity: 'Normal',
@@ -1241,6 +1247,54 @@ export default function App() {
                         </div>
                         <p className="text-xs text-white/50 mt-3 leading-relaxed">
                           Controls how much the main subject's body expression, gestures, facial expression, clothing, and jewelry deviate from the source, while keeping the main subject identity the same.
+                        </p>
+                      </div>
+
+                      <div className="mt-6">
+                        <div className="flex justify-between text-xs text-white/70 mb-2">
+                          <span>Hairstyle Evolution</span>
+                          <span className="text-[#FF6321] font-mono">{hairstyleEvolution}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          step="10" 
+                          value={hairstyleEvolution} 
+                          onChange={(e) => setHairstyleEvolution(Number(e.target.value))} 
+                          className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                        />
+                        <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
+                          <span>Match Original (0%)</span>
+                          <span>Evolved Cut/Color (50%)</span>
+                          <span>Completely New (100%)</span>
+                        </div>
+                        <p className="text-xs text-white/50 mt-3 leading-relaxed">
+                          Controls how much the main subject's hairstyle, length, and hair color deviate from the source.
+                        </p>
+                      </div>
+
+                      <div className="mt-6">
+                        <div className="flex justify-between text-xs text-white/70 mb-2">
+                          <span>Camera Angle & Perspective</span>
+                          <span className="text-[#FF6321] font-mono">{cameraAngleEvolution}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          step="10" 
+                          value={cameraAngleEvolution} 
+                          onChange={(e) => setCameraAngleEvolution(Number(e.target.value))} 
+                          className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                        />
+                        <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
+                          <span>Match Original (0%)</span>
+                          <span>Shifted Angle (50%)</span>
+                          <span>Completely New (100%)</span>
+                        </div>
+                        <p className="text-xs text-white/50 mt-3 leading-relaxed">
+                          Controls the shift in the camera angle and perspective (e.g., from front-facing to a high-angle or profile shot).
                         </p>
                       </div>
 
