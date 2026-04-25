@@ -79,6 +79,7 @@ export interface PromptGenerationOptions {
   characterReplacementRatio?: number;
   subjectEvolutionRatio?: number;
   typographyEvolutionRatio?: number;
+  typographyEnabled?: boolean;
   colorCompositionEvolution?: number;
   hairstyleEvolution?: number;
   cameraAngleEvolution?: number;
@@ -424,7 +425,7 @@ export async function generatePromptFromImage(
   }
 
   let typographyInstruction = "";
-  if (isCompletelyNew && typographyEvolutionRatio !== undefined) {
+  if (isCompletelyNew && typographyEnabled && typographyEvolutionRatio !== undefined) {
     if (typographyEvolutionRatio === 0) {
       typographyInstruction = `\n- TYPOGRAPHY PRESERVATION (0% EVOLUTION): You MUST identify and KEEP ALL ORIGINAL TEXT and TYPOGRAPHY from the source image. Re-use the exact same words and phrases.`;
     } else if (typographyEvolutionRatio === 100) {
@@ -519,7 +520,7 @@ export async function generatePromptFromImage(
   2. The foreground subject MUST BLEND SEAMLESSLY with the background. They should not look like a "sticker" placed on top.
   3. Elements (typography, shapes, splashes) MUST physically interact with the subject. Some elements should go BEHIND the subject, while others should OVERLAP and partially cover the subject's edges or clothing, creating a sense of deep, physical layering.
   4. Use "edge-bleeding" where colors from the background subtly spill into the edges of the foreground subject for a unified, cohesive atmosphere.
-- TYPOGRAPHY OVERRIDE (CRITICAL): ${typographyEvolutionRatio !== undefined ? "Follow the Typography Evolution and Rendering instructions above." : "If the source image has typography or text (especially pop-style art), extract ONLY recognized brand names or logos to reuse. Do NOT copy other common words or phrases as they are. Instead, invent and replace them with conceptually related keywords that fit the new vibe."}
+- TYPOGRAPHY OVERRIDE (CRITICAL): ${typographyEnabled && typographyEvolutionRatio !== undefined ? "Follow the Typography Evolution and Rendering instructions above." : "The source image has NO typography or text. You MUST NOT add any text, words, or brand names to the new artwork. Keep the composition clean of all lettering."}
 - ELEMENT RETENTION (${elementRetention}%): ${retentionInstruction}
 - COLOR SYSTEM: ${colorCompositionEvolution !== undefined ? "Follow the Color & Composition instructions above." : "Keep the general color palette but apply it to the new environment and mood."}
 - ORIGINALITY ENFORCEMENT: The final artwork must NOT be recognizable as a duplicate layout or tracing. Every background detail and secondary element must be new and original but stylistically relatable to the source.`;

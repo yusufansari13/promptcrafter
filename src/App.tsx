@@ -21,6 +21,7 @@ interface SettingsPreset {
     bleedControl: number;
     surfaceTexture: string;
     surfaceTextureEnabled: boolean;
+    typographyEnabled: boolean;
     mixedMediaRatio: number;
     ageDecayRatio: number;
     lightingDirection: number;
@@ -55,6 +56,7 @@ export default function App() {
   const [characterReplacementRatio, setCharacterReplacementRatio] = useState(50);
   const [subjectEvolutionRatio, setSubjectEvolutionRatio] = useState(50);
   const [typographyEvolutionRatio, setTypographyEvolutionRatio] = useState(50);
+  const [typographyEnabled, setTypographyEnabled] = useState(false);
   const [colorCompositionEvolution, setColorCompositionEvolution] = useState(50);
   const [hairstyleEvolution, setHairstyleEvolution] = useState(50);
   const [cameraAngleEvolution, setCameraAngleEvolution] = useState(50);
@@ -101,6 +103,7 @@ export default function App() {
         bleedControl,
         surfaceTexture,
         surfaceTextureEnabled,
+        typographyEnabled,
         mixedMediaRatio,
         ageDecayRatio,
         lightingDirection,
@@ -139,6 +142,7 @@ export default function App() {
     setBleedControl(settings.bleedControl);
     setSurfaceTexture(settings.surfaceTexture);
     setSurfaceTextureEnabled(settings.surfaceTextureEnabled);
+    setTypographyEnabled(settings.typographyEnabled);
     setMixedMediaRatio(settings.mixedMediaRatio);
     setAgeDecayRatio(settings.ageDecayRatio);
     setLightingDirection(settings.lightingDirection);
@@ -485,6 +489,7 @@ export default function App() {
         characterReplacementRatio,
         subjectEvolutionRatio,
         typographyEvolutionRatio,
+        typographyEnabled,
         colorCompositionEvolution,
         hairstyleEvolution,
         cameraAngleEvolution,
@@ -1832,23 +1837,40 @@ max="100"
                        </div>
 
                        <div className="mt-6">
-                         <div className="flex justify-between text-xs text-white/70 mb-2">
+                         <div className="flex justify-between text-xs text-white/70 mb-2 items-center">
                            <span>Typography Evolution (Source vs New)</span>
-                           <span className="text-[#FF6321] font-mono">{typographyEvolutionRatio}%</span>
+                           <div className="flex items-center space-x-3">
+                             <label className="flex items-center space-x-2 cursor-pointer group">
+                               <div className="relative">
+                                 <input
+                                   type="checkbox"
+                                   className="sr-only"
+                                   checked={typographyEnabled}
+                                   onChange={(e) => setTypographyEnabled(e.target.checked)}
+                                 />
+                                 <div className={`w-7 h-4 rounded-full transition-colors ${typographyEnabled ? 'bg-[#FF6321]' : 'bg-white/10'}`}></div>
+                                 <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform ${typographyEnabled ? 'translate-x-3' : 'translate-x-0'}`}></div>
+                               </div>
+                               <span className="text-[10px] text-white/40 group-hover:text-white/60 transition-colors uppercase font-mono">Include Text</span>
+                             </label>
+                             <span className="text-[#FF6321] font-mono">{typographyEvolutionRatio}%</span>
+                           </div>
                          </div>
-                         <input 
-                           type="range" 
-                           min="0" 
-                           max="100" 
-                           step="10" 
-                           value={typographyEvolutionRatio} 
-                           onChange={(e) => setTypographyEvolutionRatio(Number(e.target.value))} 
-                           className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
-                         />
-                         <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
-                           <span>Keep Original (0%)</span>
-                           <span>Mixed (50%)</span>
-                           <span>All New (100%)</span>
+                         <div className={`transition-all duration-200 ${typographyEnabled ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                           <input 
+                             type="range" 
+                             min="0" 
+                             max="100" 
+                             step="10" 
+                             value={typographyEvolutionRatio} 
+                             onChange={(e) => setTypographyEvolutionRatio(Number(e.target.value))} 
+                             className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                           />
+                           <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
+                             <span>Keep Original (0%)</span>
+                             <span>Mixed (50%)</span>
+                             <span>All New (100%)</span>
+                           </div>
                          </div>
                          <p className="text-xs text-white/50 mt-3 leading-relaxed">
                            Controls how much of the original text content is preserved vs replaced with new thematic keywords.
