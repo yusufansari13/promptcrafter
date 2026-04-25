@@ -34,6 +34,7 @@ export default function App() {
   const [impastoDepth, setImpastoDepth] = useState(50);
   const [bleedControl, setBleedControl] = useState(50);
   const [surfaceTexture, setSurfaceTexture] = useState('Rough Canvas');
+  const [surfaceTextureEnabled, setSurfaceTextureEnabled] = useState(false);
   const [mixedMediaRatio, setMixedMediaRatio] = useState(0);
   const [ageDecayRatio, setAgeDecayRatio] = useState(0);
   
@@ -387,6 +388,7 @@ export default function App() {
         impastoDepth,
         bleedControl,
         surfaceTexture,
+        surfaceTextureEnabled,
         mixedMediaRatio,
         ageDecayRatio,
         lightingDirection,
@@ -1388,20 +1390,32 @@ max="100"
                           </div>
 
                           <div className="mt-6">
-                            <label className="block text-xs text-white/70 mb-2">Surface Grain / Canvas Texture</label>
+                            <div className="flex items-center justify-between mb-2">
+                              <label className="text-xs text-white/70">Surface Grain / Canvas Texture</label>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  className="sr-only peer" 
+                                  checked={surfaceTextureEnabled}
+                                  onChange={(e) => setSurfaceTextureEnabled(e.target.checked)}
+                                />
+                                <div className="w-7 h-4 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#FF6321]"></div>
+                              </label>
+                            </div>
                             <select 
                               value={surfaceTexture}
                               onChange={(e) => setSurfaceTexture(e.target.value)}
-                              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FF6321]/50 transition-colors"
+                              disabled={!surfaceTextureEnabled}
+                              className={`w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FF6321]/50 transition-colors ${!surfaceTextureEnabled ? 'opacity-40 cursor-not-allowed' : ''}`}
                             >
-                              <option value="Rough Canvas">Rough Canvas</option>
-                              <option value="Cold-pressed Watercolor Paper">Cold-pressed Watercolor Paper</option>
-                              <option value="Wood Panel">Wood Panel</option>
-                              <option value="Crinkled Paper">Crinkled Paper</option>
-                              <option value="Smooth Vellum">Smooth Vellum</option>
+                              <option value="Rough Canvas" className="bg-[#1A1A1A] text-white">Rough Canvas</option>
+                              <option value="Cold-pressed Watercolor Paper" className="bg-[#1A1A1A] text-white">Cold-pressed Watercolor Paper</option>
+                              <option value="Wood Panel" className="bg-[#1A1A1A] text-white">Wood Panel</option>
+                              <option value="Crinkled Paper" className="bg-[#1A1A1A] text-white">Crinkled Paper</option>
+                              <option value="Smooth Vellum" className="bg-[#1A1A1A] text-white">Smooth Vellum</option>
                             </select>
                             <p className="text-xs text-white/50 mt-2 leading-relaxed">
-                              Select the physical surface the artwork is created on.
+                              Enable and select the physical surface the artwork is created on.
                             </p>
                           </div>
 

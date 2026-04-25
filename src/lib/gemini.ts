@@ -90,6 +90,7 @@ export interface PromptGenerationOptions {
   impastoDepth?: number;
   bleedControl?: number;
   surfaceTexture?: string;
+  surfaceTextureEnabled?: boolean;
   mixedMediaRatio?: number;
   ageDecayRatio?: number;
   lightingDirection?: number;
@@ -321,6 +322,7 @@ export async function generatePromptFromImage(
       impastoDepth,
       bleedControl,
       surfaceTexture,
+      surfaceTextureEnabled,
       mixedMediaRatio,
       ageDecayRatio,
       lightingDirection,
@@ -487,7 +489,7 @@ export async function generatePromptFromImage(
     let textureStylingInstruction = "";
     if (isCompletelyNew) {
       textureStylingInstruction = `\n- PHYSICAL TEXTURE & SURFACE (CRITICAL):
-    1. SURFACE: The artwork MUST be rendered on ${surfaceTexture || 'Rough Canvas'}.
+    ${surfaceTextureEnabled ? `1. SURFACE: The artwork MUST be rendered on ${surfaceTexture || 'Rough Canvas'}.` : "1. SURFACE: Maintain the natural medium surface of the source DNA (e.g., if it's a photo, keep it on photographic paper; if it's a painting, keep it on canvas)."}
     2. IMPASTO DEPTH (${impastoDepth || 0}%): ${impastoDepth && impastoDepth > 0 ? `Apply thick, visible 3D paint strokes with a depth intensity of ${impastoDepth}%. The paint should look physically elevated from the surface.` : "Maintain a smooth, integrated paint surface."}
     3. MEDIUM BLEED & DRIP (${bleedControl || 0}%): ${bleedControl && bleedControl > 0 ? `Allow the medium (ink/paint) to bleed and drip organically with ${bleedControl}% intensity. Incorporate splatters and natural imperfections.` : "Keep the medium application clean and contained within defined edges."}
     4. MIXED MEDIA (${mixedMediaRatio || 0}%): ${mixedMediaRatio && mixedMediaRatio > 0 ? `Integrate mixed media elements (like gold leaf, newsprint, or physical collage textures) with ${mixedMediaRatio}% intensity.` : "Maintain a pure single-medium paint/illustration feel."}
