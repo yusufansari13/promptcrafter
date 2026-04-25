@@ -82,6 +82,11 @@ export interface PromptGenerationOptions {
   colorCompositionEvolution?: number;
   hairstyleEvolution?: number;
   cameraAngleEvolution?: number;
+  impastoDepth?: number;
+  bleedControl?: number;
+  surfaceTexture?: string;
+  mixedMediaRatio?: number;
+  ageDecayRatio?: number;
   synthesisMode?: { subjectImage: ImagePayload, styleImage: ImagePayload } | null;
   cameraAngle: string;
   lightingSetup: string;
@@ -288,8 +293,13 @@ export async function generatePromptFromImage(
     typographyEvolutionRatio,
     colorCompositionEvolution,
     hairstyleEvolution,
-    cameraAngleEvolution,
-    synthesisMode,
+      cameraAngleEvolution,
+      impastoDepth,
+      bleedControl,
+      surfaceTexture,
+      mixedMediaRatio,
+      ageDecayRatio,
+      synthesisMode,
     cameraAngle,
     lightingSetup,
     promptDensity,
@@ -440,8 +450,18 @@ export async function generatePromptFromImage(
       }
     }
 
-  const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that is highly original but RELATABLE to the source image's DNA.${forensicInstruction}
-- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source. Notice if the subject is a REAL PHOTOGRAPH or an illustration.${characterReplacementInstruction}${subjectEvolutionInstruction}${hairstyleInstruction}${cameraAngleEvolutionInstruction}${typographyInstruction}${colorCompositionInstruction}
+    let textureStylingInstruction = "";
+    if (isCompletelyNew) {
+      textureStylingInstruction = `\n- PHYSICAL TEXTURE & SURFACE (CRITICAL):
+    1. SURFACE: The artwork MUST be rendered on ${surfaceTexture || 'Rough Canvas'}.
+    2. IMPASTO DEPTH (${impastoDepth || 0}%): ${impastoDepth && impastoDepth > 0 ? `Apply thick, visible 3D paint strokes with a depth intensity of ${impastoDepth}%. The paint should look physically elevated from the surface.` : "Maintain a smooth, integrated paint surface."}
+    3. MEDIUM BLEED & DRIP (${bleedControl || 0}%): ${bleedControl && bleedControl > 0 ? `Allow the medium (ink/paint) to bleed and drip organically with ${bleedControl}% intensity. Incorporate splatters and natural imperfections.` : "Keep the medium application clean and contained within defined edges."}
+    4. MIXED MEDIA (${mixedMediaRatio || 0}%): ${mixedMediaRatio && mixedMediaRatio > 0 ? `Integrate mixed media elements (like gold leaf, newsprint, or physical collage textures) with ${mixedMediaRatio}% intensity.` : "Maintain a pure single-medium paint/illustration feel."}
+    5. AGE & DECAY (${ageDecayRatio || 0}%): ${ageDecayRatio && ageDecayRatio > 0 ? `Apply physical weathering, cracked paint effects, and an aged patina with ${ageDecayRatio}% intensity to give it a vintage, historical quality.` : "The artwork should look fresh and pristine."}`;
+    }
+
+    const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that is highly original but RELATABLE to the source image's DNA.${forensicInstruction}
+- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source. Notice if the subject is a REAL PHOTOGRAPH or an illustration.${characterReplacementInstruction}${subjectEvolutionInstruction}${hairstyleInstruction}${cameraAngleEvolutionInstruction}${typographyInstruction}${colorCompositionInstruction}${textureStylingInstruction}
 - SUBJECT RENDERING & ANATOMY (CRITICAL): 
   1. If the source image features a PHOTOREALISTIC person (like Marilyn Monroe), you MUST maintain that PHOTOREALISTIC, high-fashion photography quality. Do NOT make them look like a 3D model, cartoon, or digital illustration.
   2. You MUST ensure PERFECT ANATOMICAL CORRECTNESS. The subject must have EXACTLY TWO HANDS and five fingers per hand. Do NOT allow overlapping limbs or extra hands to be generated.

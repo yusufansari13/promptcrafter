@@ -31,6 +31,11 @@ export default function App() {
   const [colorCompositionEvolution, setColorCompositionEvolution] = useState(50);
   const [hairstyleEvolution, setHairstyleEvolution] = useState(50);
   const [cameraAngleEvolution, setCameraAngleEvolution] = useState(50);
+  const [impastoDepth, setImpastoDepth] = useState(50);
+  const [bleedControl, setBleedControl] = useState(50);
+  const [surfaceTexture, setSurfaceTexture] = useState('Rough Canvas');
+  const [mixedMediaRatio, setMixedMediaRatio] = useState(0);
+  const [ageDecayRatio, setAgeDecayRatio] = useState(0);
   const [forensicAnalysis, setForensicAnalysis] = useState(true);
   const [relatableReplacement, setRelatableReplacement] = useState(true);
   const [preserveVibeMood, setPreserveVibeMood] = useState(true);
@@ -366,6 +371,11 @@ export default function App() {
         colorCompositionEvolution,
         hairstyleEvolution,
         cameraAngleEvolution,
+        impastoDepth,
+        bleedControl,
+        surfaceTexture,
+        mixedMediaRatio,
+        ageDecayRatio,
         synthesisMode: synthesisOptions,
         cameraAngle,
         lightingSetup,
@@ -472,6 +482,11 @@ export default function App() {
         colorCompositionEvolution: 0,
         hairstyleEvolution: 0,
         cameraAngleEvolution: 0,
+        impastoDepth: 0,
+        bleedControl: 0,
+        surfaceTexture: 'Smooth Vellum',
+        mixedMediaRatio: 0,
+        ageDecayRatio: 0,
         cameraAngle: 'Auto',
         lightingSetup: 'Auto',
         promptDensity: 'Normal',
@@ -1275,28 +1290,126 @@ export default function App() {
                       </div>
 
                       <div className="mt-6">
-                        <div className="flex justify-between text-xs text-white/70 mb-2">
-                          <span>Camera Angle & Perspective</span>
-                          <span className="text-[#FF6321] font-mono">{cameraAngleEvolution}%</span>
+                          <div className="flex justify-between text-xs text-white/70 mb-2">
+                            <span>Camera Angle & Perspective</span>
+                            <span className="text-[#FF6321] font-mono">{cameraAngleEvolution}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+max="100" 
+                            step="10" 
+                            value={cameraAngleEvolution} 
+                            onChange={(e) => setCameraAngleEvolution(Number(e.target.value))} 
+                            className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                          />
+                          <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
+                            <span>Match Original (0%)</span>
+                            <span>Shifted Angle (50%)</span>
+                            <span>Completely New (100%)</span>
+                          </div>
+                          <p className="text-xs text-white/50 mt-3 leading-relaxed">
+                            Controls the shift in the camera angle and perspective (e.g., from front-facing to a high-angle or profile shot).
+                          </p>
                         </div>
-                        <input 
-                          type="range" 
-                          min="0" 
-                          max="100" 
-                          step="10" 
-                          value={cameraAngleEvolution} 
-                          onChange={(e) => setCameraAngleEvolution(Number(e.target.value))} 
-                          className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
-                        />
-                        <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
-                          <span>Match Original (0%)</span>
-                          <span>Shifted Angle (50%)</span>
-                          <span>Completely New (100%)</span>
+
+                        <div className="mt-8 pt-6 border-t border-white/5">
+                          <h4 className="text-[10px] font-bold text-[#FF6321] uppercase tracking-[0.2em] mb-6">Texture Styling</h4>
+                          
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Impasto / Paint Depth</span>
+                              <span className="text-[#FF6321] font-mono">{impastoDepth}%</span>
+                            </div>
+                            <input 
+                              type="range" 
+                              min="0" 
+                              max="100" 
+                              step="10" 
+                              value={impastoDepth} 
+                              onChange={(e) => setImpastoDepth(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Controls the physical thickness and 3D depth of the paint strokes.
+                            </p>
+                          </div>
+
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Medium Bleed & Drip</span>
+                              <span className="text-[#FF6321] font-mono">{bleedControl}%</span>
+                            </div>
+                            <input 
+                              type="range" 
+                              min="0" 
+                              max="100" 
+                              step="10" 
+                              value={bleedControl} 
+                              onChange={(e) => setBleedControl(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Controls how much the ink or paint bleeds, drips, and splatters organically.
+                            </p>
+                          </div>
+
+                          <div className="mt-6">
+                            <label className="block text-xs text-white/70 mb-2">Surface Grain / Canvas Texture</label>
+                            <select 
+                              value={surfaceTexture}
+                              onChange={(e) => setSurfaceTexture(e.target.value)}
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FF6321]/50 transition-colors"
+                            >
+                              <option value="Rough Canvas">Rough Canvas</option>
+                              <option value="Cold-pressed Watercolor Paper">Cold-pressed Watercolor Paper</option>
+                              <option value="Wood Panel">Wood Panel</option>
+                              <option value="Crinkled Paper">Crinkled Paper</option>
+                              <option value="Smooth Vellum">Smooth Vellum</option>
+                            </select>
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Select the physical surface the artwork is created on.
+                            </p>
+                          </div>
+
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Mixed Media & Collage Integration</span>
+                              <span className="text-[#FF6321] font-mono">{mixedMediaRatio}%</span>
+                            </div>
+                            <input 
+                              type="range" 
+                              min="0" 
+                              max="100" 
+                              step="10" 
+                              value={mixedMediaRatio} 
+                              onChange={(e) => setMixedMediaRatio(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Introduces non-paint elements like newsprint, gold leaf, or physical collage.
+                            </p>
+                          </div>
+
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Age & Decay</span>
+                              <span className="text-[#FF6321] font-mono">{ageDecayRatio}%</span>
+                            </div>
+                            <input 
+                              type="range" 
+                              min="0" 
+                              max="100" 
+                              step="10" 
+                              value={ageDecayRatio} 
+                              onChange={(e) => setAgeDecayRatio(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Adds physical weathering, cracked paint, and vintage patina.
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-xs text-white/50 mt-3 leading-relaxed">
-                          Controls the shift in the camera angle and perspective (e.g., from front-facing to a high-angle or profile shot).
-                        </p>
-                      </div>
 
                       <div className="mt-6">
                         <div className="flex justify-between text-xs text-white/70 mb-2">
