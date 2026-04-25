@@ -9,6 +9,33 @@ type GenerationMode = 'recreation' | 'new_artwork';
 type AspectRatio = '1:1' | '16:9' | '9:16' | '4:3' | '3:4' | '3:2' | '2:3' | '21:9' | '9:21' | '5:4' | '4:5';
 type Resolution = '1K' | '2K' | '4K';
 
+interface SettingsPreset {
+  id: string;
+  name: string;
+  settings: {
+    colorCompositionEvolution: number;
+    subjectEvolution: number;
+    hairstyleEvolution: number;
+    cameraAngleEvolution: number;
+    impastoDepth: number;
+    bleedControl: number;
+    surfaceTexture: string;
+    surfaceTextureEnabled: boolean;
+    mixedMediaRatio: number;
+    ageDecayRatio: number;
+    lightingDirection: number;
+    atmosphericDensity: number;
+    artisticEra: string;
+    brushworkEnergy: number;
+    accessoryIntegration: number;
+    subjectGlow: number;
+    depthOfField: number;
+    motionBlur: number;
+    colorTemperature: number;
+    colorPop: number;
+  };
+}
+
 interface ImageItem {
   id: string;
   file?: File;
@@ -49,6 +76,82 @@ export default function App() {
   const [motionBlur, setMotionBlur] = useState(0);
   const [colorTemperature, setColorTemperature] = useState(0);
   const [colorPop, setColorPop] = useState(0);
+
+  // Presets
+  const [presets, setPresets] = useState<SettingsPreset[]>(() => {
+    const saved = localStorage.getItem('promptcrafter_presets');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [newPresetName, setNewPresetName] = useState('');
+  const [showPresetSave, setShowPresetSave] = useState(false);
+
+  // Preset Actions
+  const savePreset = () => {
+    if (!newPresetName.trim()) return;
+    
+    const newPreset: SettingsPreset = {
+      id: Date.now().toString(),
+      name: newPresetName.trim(),
+      settings: {
+        colorCompositionEvolution,
+        subjectEvolution,
+        hairstyleEvolution,
+        cameraAngleEvolution,
+        impastoDepth,
+        bleedControl,
+        surfaceTexture,
+        surfaceTextureEnabled,
+        mixedMediaRatio,
+        ageDecayRatio,
+        lightingDirection,
+        atmosphericDensity,
+        artisticEra,
+        brushworkEnergy,
+        accessoryIntegration,
+        subjectGlow,
+        depthOfField,
+        motionBlur,
+        colorTemperature,
+        colorPop
+      }
+    };
+    
+    const updatedPresets = [...presets, newPreset];
+    setPresets(updatedPresets);
+    localStorage.setItem('promptcrafter_presets', JSON.stringify(updatedPresets));
+    setNewPresetName('');
+    setShowPresetSave(false);
+  };
+
+  const deletePreset = (id: string) => {
+    const updatedPresets = presets.filter(p => p.id !== id);
+    setPresets(updatedPresets);
+    localStorage.setItem('promptcrafter_presets', JSON.stringify(updatedPresets));
+  };
+
+  const applyPreset = (preset: SettingsPreset) => {
+    const { settings } = preset;
+    setColorCompositionEvolution(settings.colorCompositionEvolution);
+    setSubjectEvolution(settings.subjectEvolution);
+    setHairstyleEvolution(settings.hairstyleEvolution);
+    setCameraAngleEvolution(settings.cameraAngleEvolution);
+    setImpastoDepth(settings.impastoDepth);
+    setBleedControl(settings.bleedControl);
+    setSurfaceTexture(settings.surfaceTexture);
+    setSurfaceTextureEnabled(settings.surfaceTextureEnabled);
+    setMixedMediaRatio(settings.mixedMediaRatio);
+    setAgeDecayRatio(settings.ageDecayRatio);
+    setLightingDirection(settings.lightingDirection);
+    setAtmosphericDensity(settings.atmosphericDensity);
+    setArtisticEra(settings.artisticEra);
+    setBrushworkEnergy(settings.brushworkEnergy);
+    setAccessoryIntegration(settings.accessoryIntegration);
+    setSubjectGlow(settings.subjectGlow);
+    setDepthOfField(settings.depthOfField);
+    setMotionBlur(settings.motionBlur);
+    setColorTemperature(settings.colorTemperature);
+    setColorPop(settings.colorPop);
+  };
 
   const [forensicAnalysis, setForensicAnalysis] = useState(true);
   const [relatableReplacement, setRelatableReplacement] = useState(true);
@@ -1251,6 +1354,67 @@ export default function App() {
                 {generationMode === 'new_artwork' && (
                   <>
                     <div className="space-y-3 pt-4 border-t border-white/10">
+                      <div className="flex items-center justify-between mb-4">
+                        <label className="block text-xs font-mono text-[#FF6321] uppercase tracking-wider">Settings Presets</label>
+                        <button
+                          onClick={() => setShowPresetSave(true)}
+                          className="flex items-center space-x-1 px-2 py-1 rounded bg-[#FF6321]/10 border border-[#FF6321]/30 text-[#FF6321] text-[10px] hover:bg-[#FF6321]/20 transition-colors"
+                        >
+                          <Plus className="w-3 h-3" />
+                          <span>Save Current</span>
+                        </button>
+                      </div>
+
+                      {showPresetSave && (
+                        <div className="mb-4 p-3 bg-white/5 border border-[#FF6321]/30 rounded-lg space-y-3 animate-in fade-in slide-in-from-top-2">
+                          <input
+                            type="text"
+                            placeholder="Preset Name..."
+                            value={newPresetName}
+                            onChange={(e) => setNewPresetName(e.target.value)}
+                            className="w-full bg-black/40 border border-white/10 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#FF6321]/50"
+                          />
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={savePreset}
+                              className="flex-1 py-1.5 bg-[#FF6321] text-white text-[10px] font-bold rounded hover:bg-[#E5591F] transition-colors"
+                            >
+                              Save Preset
+                            </button>
+                            <button
+                              onClick={() => setShowPresetSave(false)}
+                              className="px-3 py-1.5 bg-white/5 text-white/60 text-[10px] rounded hover:bg-white/10 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {presets.length > 0 ? (
+                        <div className="flex flex-wrap gap-2 mb-6">
+                          {presets.map((preset) => (
+                            <div key={preset.id} className="flex items-center group">
+                              <button
+                                onClick={() => applyPreset(preset)}
+                                className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-l-lg text-[10px] text-white/70 hover:bg-[#FF6321]/10 hover:border-[#FF6321]/30 hover:text-white transition-all flex items-center space-x-2"
+                              >
+                                <Sparkles className="w-3 h-3 text-[#FF6321]" />
+                                <span>{preset.name}</span>
+                              </button>
+                              <button
+                                onClick={() => deletePreset(preset.id)}
+                                className="px-2 py-1.5 bg-white/5 border-y border-r border-white/10 rounded-r-lg text-white/30 hover:bg-red-500/20 hover:text-red-500 transition-all border-l-0"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[10px] text-white/30 italic mb-6">No presets saved yet.</p>
+                      )}
+
                       <label className="block text-xs font-mono text-[#FF6321] uppercase tracking-wider mb-3">New Artwork Composition</label>
                       <div>
                         <div className="flex justify-between text-xs text-white/70 mb-2">
@@ -1499,13 +1663,13 @@ max="100"
                               onChange={(e) => setArtisticEra(e.target.value)}
                               className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FF6321]/50 transition-colors"
                             >
-                              <option value="Original">Original (Match DNA)</option>
-                              <option value="Renaissance">Renaissance Influence</option>
-                              <option value="Art Deco">Art Deco Influence</option>
-                              <option value="Pop Art">Pop Art Influence</option>
-                              <option value="Baroque">Baroque Influence</option>
-                              <option value="Fauvism">Fauvism Influence</option>
-                              <option value="Brutalism">Brutalism Influence</option>
+                              <option value="Original" className="bg-[#1A1A1A] text-white">Original (Match DNA)</option>
+                              <option value="Renaissance" className="bg-[#1A1A1A] text-white">Renaissance Influence</option>
+                              <option value="Art Deco" className="bg-[#1A1A1A] text-white">Art Deco Influence</option>
+                              <option value="Pop Art" className="bg-[#1A1A1A] text-white">Pop Art Influence</option>
+                              <option value="Baroque" className="bg-[#1A1A1A] text-white">Baroque Influence</option>
+                              <option value="Fauvism" className="bg-[#1A1A1A] text-white">Fauvism Influence</option>
+                              <option value="Brutalism" className="bg-[#1A1A1A] text-white">Brutalism Influence</option>
                             </select>
                             <p className="text-xs text-white/50 mt-2 leading-relaxed">
                               Infuse elements of an era while respecting the core vibe.
