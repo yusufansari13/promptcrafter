@@ -28,6 +28,7 @@ export default function App() {
   const [characterReplacementRatio, setCharacterReplacementRatio] = useState(50);
   const [subjectEvolutionRatio, setSubjectEvolutionRatio] = useState(50);
   const [typographyEvolutionRatio, setTypographyEvolutionRatio] = useState(50);
+  const [colorCompositionEvolution, setColorCompositionEvolution] = useState(50);
   const [forensicAnalysis, setForensicAnalysis] = useState(true);
   const [relatableReplacement, setRelatableReplacement] = useState(true);
   const [preserveVibeMood, setPreserveVibeMood] = useState(true);
@@ -360,6 +361,7 @@ export default function App() {
         characterReplacementRatio,
         subjectEvolutionRatio,
         typographyEvolutionRatio,
+        colorCompositionEvolution,
         synthesisMode: synthesisOptions,
         cameraAngle,
         lightingSetup,
@@ -463,6 +465,7 @@ export default function App() {
         characterReplacementRatio: 0,
         subjectEvolutionRatio: 0,
         typographyEvolutionRatio: 0,
+        colorCompositionEvolution: 0,
         cameraAngle: 'Auto',
         lightingSetup: 'Auto',
         promptDensity: 'Normal',
@@ -1219,7 +1222,7 @@ export default function App() {
 
                       <div className="mt-6">
                         <div className="flex justify-between text-xs text-white/70 mb-2">
-                          <span>Subject Evolution (Pose/Mood/Vibe)</span>
+                          <span>Subject Details (Pose, Expression, Clothing, Jewelry)</span>
                           <span className="text-[#FF6321] font-mono">{subjectEvolutionRatio}%</span>
                         </div>
                         <input 
@@ -1237,7 +1240,31 @@ export default function App() {
                           <span>Completely New (100%)</span>
                         </div>
                         <p className="text-xs text-white/50 mt-3 leading-relaxed">
-                          Controls how much the main subject's pose, facial expression, mood, and overall aesthetic vibe deviate from the source.
+                          Controls how much the main subject's body expression, gestures, facial expression, clothing, and jewelry deviate from the source, while keeping the main subject identity the same.
+                        </p>
+                      </div>
+
+                      <div className="mt-6">
+                        <div className="flex justify-between text-xs text-white/70 mb-2">
+                          <span>Color, Placement & Composition</span>
+                          <span className="text-[#FF6321] font-mono">{colorCompositionEvolution}%</span>
+                        </div>
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="100" 
+                          step="10" 
+                          value={colorCompositionEvolution} 
+                          onChange={(e) => setColorCompositionEvolution(Number(e.target.value))} 
+                          className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                        />
+                        <div className="flex justify-between text-[10px] text-white/40 mt-2 font-medium">
+                          <span>Match Source (0%)</span>
+                          <span>Mixed (50%)</span>
+                          <span>Completely New (100%)</span>
+                        </div>
+                        <p className="text-xs text-white/50 mt-3 leading-relaxed">
+                          Controls how much it will take reference from the source vs creating a completely new color palette, composition, and typography placement (relative to the main subject and vibe).
                         </p>
                       </div>
 
@@ -2219,4 +2246,3 @@ export default function App() {
     </div>
   );
 }
-

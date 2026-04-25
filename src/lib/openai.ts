@@ -79,6 +79,7 @@ export interface PromptGenerationOptions {
   characterReplacementRatio?: number;
   subjectEvolutionRatio?: number;
   typographyEvolutionRatio?: number;
+  colorCompositionEvolution?: number;
   synthesisMode?: { subjectImage: ImagePayload, styleImage: ImagePayload } | null;
   cameraAngle: string;
   lightingSetup: string;
@@ -283,6 +284,7 @@ export async function generatePromptFromImage(
     characterReplacementRatio,
       subjectEvolutionRatio,
       typographyEvolutionRatio,
+      colorCompositionEvolution,
       synthesisMode,
     cameraAngle,
     lightingSetup,
@@ -377,11 +379,11 @@ export async function generatePromptFromImage(
   let subjectEvolutionInstruction = "";
   if (isCompletelyNew && subjectEvolutionRatio !== undefined) {
     if (subjectEvolutionRatio === 0) {
-      subjectEvolutionInstruction = `\n- SUBJECT PRESERVATION (0% EVOLUTION): You MUST perfectly replicate the main subject's pose, facial expression, emotional mood, and aesthetic vibe exactly as seen in the source image. Do NOT deviate from their original posture or feeling.`;
+      subjectEvolutionInstruction = `\n- SUBJECT DETAILS (0% EVOLUTION): You MUST perfectly replicate the main subject's exact body expression, gestures, facial expression, clothing, and jewelry as seen in the source image. The main subject identity MUST remain the same.`;
     } else if (subjectEvolutionRatio === 100) {
-      subjectEvolutionInstruction = `\n- SUBJECT REVOLUTION (100% EVOLUTION): You MUST completely transform the main subject. Give them a radically different pose, a new and unexpected facial expression, a completely different emotional mood, and a fresh aesthetic vibe that differs significantly from the source.`;
+      subjectEvolutionInstruction = `\n- SUBJECT DETAILS (100% EVOLUTION): You MUST completely transform the main subject's details. Give them completely new body expressions, gestures, facial expressions, clothing, and jewelry (if applicable). However, the core identity of the main subject MUST remain EXACTLY the same.`;
     } else {
-      subjectEvolutionInstruction = `\n- SUBJECT EVOLUTION (${subjectEvolutionRatio}% EVOLUTION): You MUST evolve the main subject's presentation. Balance the source's characteristics with new interpretations. Shift their pose, expression, mood, and vibe by approximately ${subjectEvolutionRatio}%, where 0% is an exact match and 100% is a total departure.`;
+      subjectEvolutionInstruction = `\n- SUBJECT DETAILS (${subjectEvolutionRatio}% EVOLUTION): Evolve the main subject's details by ${subjectEvolutionRatio}%. Mix their original body expression, gestures, facial expression, clothing, and jewelry with new interpretations. The core identity of the main subject MUST remain EXACTLY the same.`;
     }
   }
 
@@ -401,14 +403,25 @@ export async function generatePromptFromImage(
     4. HANDMADE DNA: Every letter must be rendered as if it were hand-painted, sprayed, or handmade. NEVER use straight lines, digital fonts, or perfect alignments. The letters must be chaotic and organically integrated into the physical layers of the artwork.`;
   }
 
+  let colorCompositionInstruction = "";
+  if (isCompletelyNew && colorCompositionEvolution !== undefined) {
+    if (colorCompositionEvolution === 0) {
+      colorCompositionInstruction = `\n- COLOR & COMPOSITION (0% EVOLUTION): Exactly match the source image's color palette, typography placement, and overall composition structure relative to the subject.`;
+    } else if (colorCompositionEvolution === 100) {
+      colorCompositionInstruction = `\n- COLOR & COMPOSITION (100% EVOLUTION): Invent a completely new color palette, composition, and typography placement. Completely reimagine the environment and layout while keeping the main subject and vibe intact.`;
+    } else {
+      colorCompositionInstruction = `\n- COLOR & COMPOSITION (${colorCompositionEvolution}% EVOLUTION): Shift the color palette, typography placement, and composition by approximately ${colorCompositionEvolution}%. Blend the source's color scheme and layout with entirely new complementary colors and dynamic placements.`;
+    }
+  }
+
   const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that is highly original but RELATABLE to the source image's DNA.${forensicInstruction}
-- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source. Notice if the subject is a REAL PHOTOGRAPH or an illustration.${characterReplacementInstruction}${subjectEvolutionInstruction}${typographyInstruction}
+- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source. Notice if the subject is a REAL PHOTOGRAPH or an illustration.${characterReplacementInstruction}${subjectEvolutionInstruction}${typographyInstruction}${colorCompositionInstruction}
 - SUBJECT RENDERING & ANATOMY (CRITICAL): 
   1. If the source image features a PHOTOREALISTIC person (like Marilyn Monroe), you MUST maintain that PHOTOREALISTIC, high-fashion photography quality. Do NOT make them look like a 3D model, cartoon, or digital illustration.
   2. You MUST ensure PERFECT ANATOMICAL CORRECTNESS. The subject must have EXACTLY TWO HANDS and five fingers per hand. Do NOT allow overlapping limbs or extra hands to be generated.
-- SUBJECT PRESERVATION & TRANSFORMATION: ${characterReplacementRatio && characterReplacementRatio > 0 ? "Follow the Character Replacement instructions above. For any characters kept, you" : "Keep the EXACT main subject identity (e.g., if it is Marilyn Monroe, a specific character, or iconic figure, retain them)."} ${subjectEvolutionRatio !== undefined ? "Apply the Subject Evolution instructions above to their pose, expression, mood, and vibe." : "However, you MUST completely change their pose, expression, action, and mood to be entirely different from the source image."} ${options.customAction ? `FORCE this specific action/pose: "${options.customAction}". ` : ''}
+- SUBJECT PRESERVATION & TRANSFORMATION: ${characterReplacementRatio && characterReplacementRatio > 0 ? "Follow the Character Replacement instructions above. For any characters kept, you" : "Keep the EXACT main subject identity (e.g., if it is Marilyn Monroe, a specific character, or iconic figure, retain them)."} ${subjectEvolutionRatio !== undefined ? "Apply the Subject Details instructions above to their body expression, gestures, facial expression, clothing, and jewelry." : "However, you MUST completely change their pose, expression, action, and mood to be entirely different from the source image."} ${options.customAction ? `FORCE this specific action/pose: "${options.customAction}". ` : ''}
 - MOOD & VIBE: The overall mood and vibe MUST remain HIGHLY RELATABLE to the original. If the source is seductive, sophisticated, and high-end fashion, the new artwork must NOT become "pop-cartoonish" or "childish". It must retain the adult, high-fashion, and cinematic atmosphere of the original. ${options.customMood ? `However, INFUSE this specific mood/vibe nuance: "${options.customMood}". ` : 'Maintain the core emotional resonance and atmosphere of the source.'}
-- COMPOSITION & ENVIRONMENT: Create a completely new background and layout that fits the original relatable vibe perfectly. Do NOT duplicate the original layout, but keep the world-building consistent. 
+- COMPOSITION & ENVIRONMENT: ${colorCompositionEvolution !== undefined ? "Follow the Color & Composition instructions above." : "Create a completely new background and layout that fits the original relatable vibe perfectly. Do NOT duplicate the original layout, but keep the world-building consistent."} 
 - ORGANIC BLENDING & PHYSICAL TEXTURE (CRITICAL):
   1. The entire image MUST look like a PHYSICAL, HAND-PAINTED piece of art. Incorporate visible brush strokes, paint splatters, canvas texture, and realistic ink drips.
   2. The foreground subject MUST BLEND SEAMLESSLY with the background. They should not look like a "sticker" placed on top.
@@ -416,7 +429,7 @@ export async function generatePromptFromImage(
   4. Use "edge-bleeding" where colors from the background subtly spill into the edges of the foreground subject for a unified, cohesive atmosphere.
 - TYPOGRAPHY OVERRIDE (CRITICAL): ${typographyEvolutionRatio !== undefined ? "Follow the Typography Evolution and Rendering instructions above." : "If the source image has typography or text (especially pop-style art), extract ONLY recognized brand names or logos to reuse. Do NOT copy other common words or phrases as they are. Instead, invent and replace them with conceptually related keywords that fit the new vibe."}
 - ELEMENT RETENTION (${elementRetention}%): ${retentionInstruction}
-- COLOR SYSTEM: Keep the general color palette but apply it to the new environment and mood.
+- COLOR SYSTEM: ${colorCompositionEvolution !== undefined ? "Follow the Color & Composition instructions above." : "Keep the general color palette but apply it to the new environment and mood."}
 - ORIGINALITY ENFORCEMENT: The final artwork must NOT be recognizable as a duplicate layout or tracing. Every background detail and secondary element must be new and original but stylistically relatable to the source.`;
 
   if (isCompletelyNew && addCreativeElements) {
