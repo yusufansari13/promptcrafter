@@ -14,7 +14,7 @@ interface SettingsPreset {
   name: string;
   settings: {
     colorCompositionEvolution: number;
-    subjectEvolution: number;
+    subjectEvolutionRatio: number;
     hairstyleEvolution: number;
     cameraAngleEvolution: number;
     impastoDepth: number;
@@ -94,7 +94,7 @@ export default function App() {
       name: newPresetName.trim(),
       settings: {
         colorCompositionEvolution,
-        subjectEvolution,
+        subjectEvolutionRatio,
         hairstyleEvolution,
         cameraAngleEvolution,
         impastoDepth,
@@ -132,7 +132,7 @@ export default function App() {
   const applyPreset = (preset: SettingsPreset) => {
     const { settings } = preset;
     setColorCompositionEvolution(settings.colorCompositionEvolution);
-    setSubjectEvolution(settings.subjectEvolution);
+    setSubjectEvolutionRatio(settings.subjectEvolutionRatio);
     setHairstyleEvolution(settings.hairstyleEvolution);
     setCameraAngleEvolution(settings.cameraAngleEvolution);
     setImpastoDepth(settings.impastoDepth);
