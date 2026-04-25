@@ -36,6 +36,19 @@ export default function App() {
   const [surfaceTexture, setSurfaceTexture] = useState('Rough Canvas');
   const [mixedMediaRatio, setMixedMediaRatio] = useState(0);
   const [ageDecayRatio, setAgeDecayRatio] = useState(0);
+  
+  // Advanced Features
+  const [lightingDirection, setLightingDirection] = useState(50);
+  const [atmosphericDensity, setAtmosphericDensity] = useState(0);
+  const [artisticEra, setArtisticEra] = useState('Original');
+  const [brushworkEnergy, setBrushworkEnergy] = useState(50);
+  const [accessoryIntegration, setAccessoryIntegration] = useState(0);
+  const [subjectGlow, setSubjectGlow] = useState(0);
+  const [depthOfField, setDepthOfField] = useState(50);
+  const [motionBlur, setMotionBlur] = useState(0);
+  const [colorTemperature, setColorTemperature] = useState(0);
+  const [colorPop, setColorPop] = useState(0);
+
   const [forensicAnalysis, setForensicAnalysis] = useState(true);
   const [relatableReplacement, setRelatableReplacement] = useState(true);
   const [preserveVibeMood, setPreserveVibeMood] = useState(true);
@@ -376,6 +389,16 @@ export default function App() {
         surfaceTexture,
         mixedMediaRatio,
         ageDecayRatio,
+        lightingDirection,
+        atmosphericDensity,
+        artisticEra,
+        brushworkEnergy,
+        accessoryIntegration,
+        subjectGlow,
+        depthOfField,
+        motionBlur,
+        colorTemperature,
+        colorPop,
         synthesisMode: synthesisOptions,
         cameraAngle,
         lightingSetup,
@@ -487,6 +510,16 @@ export default function App() {
         surfaceTexture: 'Smooth Vellum',
         mixedMediaRatio: 0,
         ageDecayRatio: 0,
+        lightingDirection: 50,
+        atmosphericDensity: 0,
+        artisticEra: 'Original',
+        brushworkEnergy: 50,
+        accessoryIntegration: 0,
+        subjectGlow: 0,
+        depthOfField: 50,
+        motionBlur: 0,
+        colorTemperature: 0,
+        colorPop: 0,
         cameraAngle: 'Auto',
         lightingSetup: 'Auto',
         promptDensity: 'Normal',
@@ -1407,6 +1440,167 @@ max="100"
                             />
                             <p className="text-xs text-white/50 mt-2 leading-relaxed">
                               Adds physical weathering, cracked paint, and vintage patina.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-8 pt-6 border-t border-white/5">
+                          <h4 className="text-[10px] font-bold text-[#FF6321] uppercase tracking-[0.2em] mb-6">Advanced Lighting & Atmosphere</h4>
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Lighting Direction / Time of Day</span>
+                              <span className="text-[#FF6321] font-mono">{lightingDirection}%</span>
+                            </div>
+                            <input 
+                              type="range" min="0" max="100" step="10" value={lightingDirection} 
+                              onChange={(e) => setLightingDirection(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Soft Diffused (0%) → Golden Hour (50%) → Dramatic Chiaroscuro (100%).
+                            </p>
+                          </div>
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Atmospheric Density</span>
+                              <span className="text-[#FF6321] font-mono">{atmosphericDensity}%</span>
+                            </div>
+                            <input 
+                              type="range" min="0" max="100" step="10" value={atmosphericDensity} 
+                              onChange={(e) => setAtmosphericDensity(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Controls fog, haze, and light rays for a cinematic feel.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-8 pt-6 border-t border-white/5">
+                          <h4 className="text-[10px] font-bold text-[#FF6321] uppercase tracking-[0.2em] mb-6">Artistic Influence</h4>
+                          <div className="mt-6">
+                            <label className="block text-xs text-white/70 mb-2">Artistic Era / Movement Influence</label>
+                            <select 
+                              value={artisticEra}
+                              onChange={(e) => setArtisticEra(e.target.value)}
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FF6321]/50 transition-colors"
+                            >
+                              <option value="Original">Original (Match DNA)</option>
+                              <option value="Renaissance">Renaissance Influence</option>
+                              <option value="Art Deco">Art Deco Influence</option>
+                              <option value="Pop Art">Pop Art Influence</option>
+                              <option value="Baroque">Baroque Influence</option>
+                              <option value="Fauvism">Fauvism Influence</option>
+                              <option value="Brutalism">Brutalism Influence</option>
+                            </select>
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Infuse elements of an era while respecting the core vibe.
+                            </p>
+                          </div>
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Brushwork Energy</span>
+                              <span className="text-[#FF6321] font-mono">{brushworkEnergy}%</span>
+                            </div>
+                            <input 
+                              type="range" min="0" max="100" step="10" value={brushworkEnergy} 
+                              onChange={(e) => setBrushworkEnergy(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Precise (0%) → Standard (50%) → Expressive / Chaotic (100%).
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-8 pt-6 border-t border-white/5">
+                          <h4 className="text-[10px] font-bold text-[#FF6321] uppercase tracking-[0.2em] mb-6">Subject & Dynamics</h4>
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Accessory & Tech Integration</span>
+                              <span className="text-[#FF6321] font-mono">{accessoryIntegration}%</span>
+                            </div>
+                            <input 
+                              type="range" min="0" max="100" step="10" value={accessoryIntegration} 
+                              onChange={(e) => setAccessoryIntegration(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Evolve jewelry/items into tech or mystical artifacts.
+                            </p>
+                          </div>
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Subject Glow / Aura</span>
+                              <span className="text-[#FF6321] font-mono">{subjectGlow}%</span>
+                            </div>
+                            <input 
+                              type="range" min="0" max="100" step="10" value={subjectGlow} 
+                              onChange={(e) => setSubjectGlow(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Adds bioluminescence or magical internal light to the subject.
+                            </p>
+                          </div>
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Depth of Field (Bokeh)</span>
+                              <span className="text-[#FF6321] font-mono">{depthOfField}%</span>
+                            </div>
+                            <input 
+                              type="range" min="0" max="100" step="10" value={depthOfField} 
+                              onChange={(e) => setDepthOfField(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Controls background blur intensity.
+                            </p>
+                          </div>
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Motion Blur / Energy</span>
+                              <span className="text-[#FF6321] font-mono">{motionBlur}%</span>
+                            </div>
+                            <input 
+                              type="range" min="0" max="100" step="10" value={motionBlur} 
+                              onChange={(e) => setMotionBlur(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Adds dynamic movement streaks or energy to the scene.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-8 pt-6 border-t border-white/5">
+                          <h4 className="text-[10px] font-bold text-[#FF6321] uppercase tracking-[0.2em] mb-6">Color Theory</h4>
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Color Temperature</span>
+                              <span className="text-[#FF6321] font-mono">{colorTemperature > 0 ? `+${colorTemperature}` : colorTemperature}</span>
+                            </div>
+                            <input 
+                              type="range" min="-100" max="100" step="10" value={colorTemperature} 
+                              onChange={(e) => setColorTemperature(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Ice Cold Blues (-100) ← Neutral (0) → Burning Oranges (+100).
+                            </p>
+                          </div>
+                          <div className="mt-6">
+                            <div className="flex justify-between text-xs text-white/70 mb-2">
+                              <span>Complementary Color Pop</span>
+                              <span className="text-[#FF6321] font-mono">{colorPop}%</span>
+                            </div>
+                            <input 
+                              type="range" min="0" max="100" step="10" value={colorPop} 
+                              onChange={(e) => setColorPop(Number(e.target.value))} 
+                              className="w-full accent-[#FF6321] h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer" 
+                            />
+                            <p className="text-xs text-white/50 mt-2 leading-relaxed">
+                              Introduces opposite-hue highlights and accents for maximum contrast.
                             </p>
                           </div>
                         </div>

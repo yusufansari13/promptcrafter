@@ -87,6 +87,16 @@ export interface PromptGenerationOptions {
   surfaceTexture?: string;
   mixedMediaRatio?: number;
   ageDecayRatio?: number;
+  lightingDirection?: number;
+  atmosphericDensity?: number;
+  artisticEra?: string;
+  brushworkEnergy?: number;
+  accessoryIntegration?: number;
+  subjectGlow?: number;
+  depthOfField?: number;
+  motionBlur?: number;
+  colorTemperature?: number;
+  colorPop?: number;
   synthesisMode?: { subjectImage: ImagePayload, styleImage: ImagePayload } | null;
   cameraAngle: string;
   lightingSetup: string;
@@ -299,6 +309,16 @@ export async function generatePromptFromImage(
       surfaceTexture,
       mixedMediaRatio,
       ageDecayRatio,
+      lightingDirection,
+      atmosphericDensity,
+      artisticEra,
+      brushworkEnergy,
+      accessoryIntegration,
+      subjectGlow,
+      depthOfField,
+      motionBlur,
+      colorTemperature,
+      colorPop,
       synthesisMode,
     cameraAngle,
     lightingSetup,
@@ -457,11 +477,35 @@ export async function generatePromptFromImage(
     2. IMPASTO DEPTH (${impastoDepth || 0}%): ${impastoDepth && impastoDepth > 0 ? `Apply thick, visible 3D paint strokes with a depth intensity of ${impastoDepth}%. The paint should look physically elevated from the surface.` : "Maintain a smooth, integrated paint surface."}
     3. MEDIUM BLEED & DRIP (${bleedControl || 0}%): ${bleedControl && bleedControl > 0 ? `Allow the medium (ink/paint) to bleed and drip organically with ${bleedControl}% intensity. Incorporate splatters and natural imperfections.` : "Keep the medium application clean and contained within defined edges."}
     4. MIXED MEDIA (${mixedMediaRatio || 0}%): ${mixedMediaRatio && mixedMediaRatio > 0 ? `Integrate mixed media elements (like gold leaf, newsprint, or physical collage textures) with ${mixedMediaRatio}% intensity.` : "Maintain a pure single-medium paint/illustration feel."}
-    5. AGE & DECAY (${ageDecayRatio || 0}%): ${ageDecayRatio && ageDecayRatio > 0 ? `Apply physical weathering, cracked paint effects, and an aged patina with ${ageDecayRatio}% intensity to give it a vintage, historical quality.` : "The artwork should look fresh and pristine."}`;
+    5. AGE & DECAY (${ageDecayRatio || 0}%): ${ageDecayRatio && ageDecayRatio > 0 ? `Apply physical weathering, cracked paint effects, and an aged patina with ${ageDecayRatio}% intensity to give it a vintage, historical quality.` : "The artwork should look fresh and pristine."}
+    6. BRUSHWORK ENERGY (${brushworkEnergy || 50}%): ${brushworkEnergy !== undefined ? `Render the brushwork with ${brushworkEnergy}% energy. 0% is calm and precise; 100% is chaotic and expressive, similar to Van Gogh or Basquiat, while still respecting the core subject DNA.` : ""}`;
+    }
+
+    let advancedAtmosphereInstruction = "";
+    if (isCompletelyNew) {
+      advancedAtmosphereInstruction = `\n- LIGHTING & ATMOSPHERE (RELATIVE INFUSION):
+    1. LIGHTING DIRECTION (${lightingDirection || 50}%): Shift the lighting towards ${lightingDirection && lightingDirection < 30 ? "Soft Diffused Daylight" : lightingDirection && lightingDirection < 70 ? "Golden Hour warmth" : "Dramatic Chiaroscuro high-contrast"}. This light MUST interact with the original subject's DNA realistically.
+    2. ATMOSPHERIC DENSITY (${atmosphericDensity || 0}%): Infuse the environment with ${atmosphericDensity}% density of fog, light rays, or cinematic haze.
+    3. SUBJECT GLOW (${subjectGlow || 0}%): Apply ${subjectGlow}% intensity of internal bioluminescence or magical aura to the main subject ONLY if it enhances the original relatable vibe.
+    4. COLOR TEMPERATURE (${colorTemperature || 0}): Shift the global color balance by ${colorTemperature}. Negative values (-100 to -1) add ice-cold blue tones; positive values (1 to 100) add burning magma orange/warmth.
+    5. COMPLEMENTARY POP (${colorPop || 0}%): Introduce highlights and accent splatters of the mathematical opposite (complementary) hue with ${colorPop}% intensity to maximize visual contrast without changing the base color palette's vibe.`;
+    }
+
+    let artisticInfluenceInstruction = "";
+    if (isCompletelyNew && artisticEra && artisticEra !== 'Original') {
+      artisticInfluenceInstruction = `\n- ARTISTIC INFLUENCE (DNA-PRESERVING): Infuse the artwork with the stylistic DNA of the ${artisticEra} movement. CRITICAL: This is an INFUSION, not a replacement. If the source is a high-fashion photo, it must remain a high-fashion photo but with ${artisticEra} color theories, lighting patterns, or decorative motifs subtly integrated.`;
+    }
+
+    let dynamicsInstruction = "";
+    if (isCompletelyNew) {
+      dynamicsInstruction = `\n- DYNAMICS & FOCUS:
+    1. DEPTH OF FIELD (${depthOfField || 50}%): Set the background blur (bokeh) intensity to ${depthOfField}%. High values create a macro-focus effect on the subject.
+    2. MOTION BLUR (${motionBlur || 0}%): Add ${motionBlur}% intensity of dynamic motion streaks or long-exposure energy to the scene.
+    3. ACCESSORY EVOLUTION (${accessoryIntegration || 0}%): Evolve the subject's accessories (jewelry, items held) into ${accessoryIntegration}% more ${accessoryIntegration > 50 ? "futuristic tech or mystical artifacts" : "modern avant-garde interpretations"} while keeping the subject's core identity intact.`;
     }
 
     const completelyNewBase = `CORE OBJECTIVE: Create a COMPLETELY NEW artwork that is highly original but RELATABLE to the source image's DNA.${forensicInstruction}
-- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source. Notice if the subject is a REAL PHOTOGRAPH or an illustration.${characterReplacementInstruction}${subjectEvolutionInstruction}${hairstyleInstruction}${cameraAngleEvolutionInstruction}${typographyInstruction}${colorCompositionInstruction}${textureStylingInstruction}
+- DEEP ANALYSIS: Deeply analyze the style, color palette, and specific details of the source. Notice if the subject is a REAL PHOTOGRAPH or an illustration.${characterReplacementInstruction}${subjectEvolutionInstruction}${hairstyleInstruction}${cameraAngleEvolutionInstruction}${typographyInstruction}${colorCompositionInstruction}${textureStylingInstruction}${advancedAtmosphereInstruction}${artisticInfluenceInstruction}${dynamicsInstruction}
 - SUBJECT RENDERING & ANATOMY (CRITICAL): 
   1. If the source image features a PHOTOREALISTIC person (like Marilyn Monroe), you MUST maintain that PHOTOREALISTIC, high-fashion photography quality. Do NOT make them look like a 3D model, cartoon, or digital illustration.
   2. You MUST ensure PERFECT ANATOMICAL CORRECTNESS. The subject must have EXACTLY TWO HANDS and five fingers per hand. Do NOT allow overlapping limbs or extra hands to be generated.
