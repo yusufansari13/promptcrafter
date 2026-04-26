@@ -1,5 +1,5 @@
-import React, { useState, useRef, ChangeEvent } from 'react';
-import { Upload, Image as ImageIcon, Copy, Check, Loader2, Sparkles, AlertCircle, Info, ShieldCheck, Link as LinkIcon, X, Plus, Focus, History } from 'lucide-react';
+import React, { useState, useRef, ChangeEvent, useEffect } from 'react';
+import { Upload, Image as ImageIcon, Copy, Check, Loader2, Sparkles, AlertCircle, Info, ShieldCheck, Link as LinkIcon, X, Plus, Focus, History, Lock, Key } from 'lucide-react';
 import { generatePromptFromImage, makePromptSafe, generateFidelityPromptFromImage, StyleAdherenceType, StylePresetType, SubjectManipulationType, ImagePayload, PreservationWeight } from './lib/gemini';
 import { generatePromptFromImage as generatePromptOpenAI, makePromptSafe as makePromptSafeOpenAI, generateFidelityPromptFromImage as generateFidelityPromptOpenAI } from './lib/openai';
 
@@ -45,6 +45,29 @@ interface ImageItem {
 }
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // If no password is set in environment, allow access
+    const requiredPassword = (process.env as any).VITE_APP_PASSWORD;
+    if (!requiredPassword) return true;
+    
+    // Check if previously authenticated
+    return localStorage.getItem('promptcrafter_auth') === 'true';
+  });
+  const [passwordInput, setPasswordInput] = useState('');
+  const [authError, setAuthError] = useState(false);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const requiredPassword = (process.env as any).VITE_APP_PASSWORD;
+    if (passwordInput === requiredPassword) {
+      setIsAuthenticated(true);
+      localStorage.setItem('promptcrafter_auth', 'true');
+      setAuthError(false);
+    } else {
+      setAuthError(true);
+    }
+  };
+
   const [apiProvider, setApiProvider] = useState<ApiProvider>('Gemini');
   const [images, setImages] = useState<ImageItem[]>([]);
   const [imageUrlInput, setImageUrlInput] = useState('');
@@ -823,6 +846,54 @@ export default function App() {
       setIsGeneratingImage(false);
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-[#111111] border border-white/10 rounded-2xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
+          <div className="flex flex-col items-center text-center mb-8">
+            <div className="w-16 h-16 bg-[#FF6321]/10 rounded-2xl flex items-center justify-center mb-4">
+              <Lock className="w-8 h-8 text-[#FF6321]" />
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-2">Access Protected</h1>
+            <p className="text-sm text-white/50">Please enter the password to access Prompt Crafter Pro.</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                  <Key className="w-4 h-4 text-white/30 group-focus-within:text-[#FF6321] transition-colors" />
+                </div>
+                <input
+                  type="password"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  placeholder="Enter access password..."
+                  className={`w-full bg-black/40 border ${authError ? 'border-red-500/50' : 'border-white/10'} rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-[#FF6321]/50 transition-all`}
+                  autoFocus
+                />
+              </div>
+              {authError && (
+                <p className="text-[10px] text-red-500 font-medium ml-1">Incorrect password. Please try again.</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-[#FF6321] text-white py-3 rounded-xl text-sm font-bold hover:bg-[#E5591F] transition-all shadow-lg shadow-[#FF6321]/20"
+            >
+              Access Pro Tools
+            </button>
+          </form>
+
+          <div className="mt-8 pt-6 border-t border-white/5 text-center">
+            <p className="text-[10px] text-white/20 uppercase tracking-[0.2em]">Prompt Crafter Pro • Secure</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-gray-100 font-sans selection:bg-[#FF6321] selection:text-white">
